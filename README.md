@@ -7,12 +7,12 @@ The basic idea is to describe fault systems as graphs (or networks) consisting o
 
 
 
-# Extraction
+## Extraction
 The extraction of faults from raster data typically involves three key steps: (1) pre-processing, (2) thresholding, and (3) clustering. The basic idea is that we first clean our data, then identify areas which belong to faults, and finally classify these areas into individual faults (see example 1). 
 
 
 
-# Analysis
+## Analysis
 Once we have extracted a fault network, we can perform many of the steps of a fault analysis usign the functions of this module. For example, we can calculate fault lengths as the sum of the edge lengths (i.e. distances between connected nodes) of each component.
 
 
