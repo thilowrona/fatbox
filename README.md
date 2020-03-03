@@ -3,6 +3,12 @@ A python module for the extraction and analysis of faults (and fractures) in ras
 
 The basic idea of the module is to describe fault systems as graphs (or networks) consisting of nodes and edges, which allows us to define faults as components, i.e. sets of nodes connected by edges, of a graph. Nodes, which are not connected through edges, thus belong to different components (faults).
 
+## Extraction
+![Image description](/examples/example1/flowchart.png)
+
+The extraction of faults from raster data typically involves three key steps: (1) pre-processing, (2) thresholding, and (3) clustering. The basic idea is that we first clean our data, then identify areas which belong to faults, and finally classify these areas into faults.
+
+
 ## Setup
 Our module is build on top of several other packages (e.g. NumPy, Networkx), which are listed in ``` requirements.txt```. You can install these packages with:
 
