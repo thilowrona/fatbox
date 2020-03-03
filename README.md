@@ -7,7 +7,6 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 
 ## Setup
-### Linux
 1. Install **Python 3**
 2. Install required packages listed in ```requirements.txt```. You can install these packages with:
 
@@ -17,9 +16,7 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 ```git clone https://github.com/thilowrona/fault_analysis/```
 
-### Windows
 
-### Mac
 
 ## Fault extraction
 ![Image description](/examples/1-fault_extraction/flowchart.png)
