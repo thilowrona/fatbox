@@ -15,7 +15,7 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 3. Clone git repository:
 
-```<https://github.com/thilowrona/fault_analysis/>```
+```git clone https://github.com/thilowrona/fault_analysis/```
 
 
 
