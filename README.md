@@ -14,7 +14,8 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 ``` pip install -r /path/to/requirements.txt ```
 
 3. Clone git repository:
-```https://github.com/thilowrona/fault_analysis/```
+
+```<https://github.com/thilowrona/fault_analysis/>```
 
 
 
