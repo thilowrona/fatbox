@@ -1,3 +1,2 @@
-# fault_analysis
-A python module for the analysis of faults in raster data
-#Demo
+# Fault extraction and analysis
+A python module for the extraction and analysis of faults and fractures in raster data.
