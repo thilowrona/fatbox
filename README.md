@@ -17,7 +17,9 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 ```git clone https://github.com/thilowrona/fault_analysis/```
 
+### Windows
 
+### Mac
 
 ## Fault extraction
 ![Image description](/examples/1-fault_extraction/flowchart.png)
