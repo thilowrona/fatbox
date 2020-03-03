@@ -2,7 +2,8 @@
 A python module for the extraction and analysis of faults (and fractures) in raster data. We often observer faults in 2-D or 3-D raster data (e.g. geological maps, numerical models or seismic volumes), yet the extraction of these structures still requires large amounts of our time. The aim of this module is to reduce this time by providing a set of functions, which can perform many of the steps required for the extraction and analysis of fault systems.
 
 ## Setup
-Our module is build on top of several other packages (e.g. NumPy, Networkx), which are listed in 'requirements.txt'. To install these packages, execute:
+Our module is build on top of several other packages (e.g. NumPy, Networkx), which are listed in ``` requirements.txt```. To install these packages execute:
+
 ``` pip install -r /path/to/requirements.txt ```
 
 ## Fault systems as graphs
