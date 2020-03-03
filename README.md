@@ -18,7 +18,7 @@ The extraction of faults from raster data typically involves three key steps: (1
 
 
 
-## Analysis
+## Fault analysis
 Once we have extracted a fault network, we can perform many of the steps of a fault analysis usign the functions of this module. For example, we can calculate fault lengths as the sum of the edge lengths (i.e. distances between connected nodes) of each component.
 
 
