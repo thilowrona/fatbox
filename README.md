@@ -7,7 +7,9 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 
 ## Setup
-Our module is build on top of several other packages (e.g. NumPy, Networkx), which are listed in ``` requirements.txt```. You can install these packages with:
+### Linux
+1. Install **Python 3**
+2. Install packages required for module listed in ``` requirements.txt```. You can install these packages with:
 
 ``` pip install -r /path/to/requirements.txt ```
 
