@@ -3,7 +3,93 @@ import random
 import numpy as np
 import networkx as nx
 
-from graph_metrics import*
+import sys
+sys.path.append('/home/wrona/fault_analysis/code/')
+
+import metrics
+
+
+
+
+
+
+
+
+
+def add_edges(G, N):   
+ 
+    def distance_between_nodes(G, node0, node1):
+        (x0, y0) = G.nodes[node0]['pos']
+        (x1, y1) = G.nodes[node1]['pos']
+        return math.sqrt((x0-x1)**2+(y0-y1)**2)
+
+
+    def find_closest(G, node):
+        threshold = 1000000
+        for other in G:
+            d = distance_between_nodes(G, node, other)
+            if 0 < d < threshold:
+                threshold = d
+                index = other
+        return index
+  
+
+    for node in G:
+        print(str(node) + ' of ' + str(N))
+        closest = find_closest(G, node)
+        if (closest, node) not in G.edges:
+            G.add_edge(node, closest)
+
+
+
+
+
+
+
+    def clostest_except(G, node, cn):
+        threshold = 1000000
+        for other in G:
+            if other not in cn:
+                d = distance_between_nodes(G, node, other)
+                if 0 < d < threshold:
+                    threshold = d
+                    index = other
+        return index, threshold
+
+
+
+    for node in G:
+        print(str(node) + ' of ' + str(N))
+        if len(G.edges(node)) == 1:
+            cn = nx.node_connected_component(G, node)
+            index, threshold  = clostest_except(G, node, cn)
+            if threshold < 2:
+                G.add_edge(node, index)
+    return G
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

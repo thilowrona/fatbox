@@ -7,12 +7,12 @@ import matplotlib.patches as patches
 
 import seaborn as sns
 
-from graph_utils import get_labels
 
-from graph_metrics import*
+import sys
+sys.path.append('/home/wrona/fault_analysis/code/')
 
-
-
+from metrics import *
+from utils import *
 
 
 
