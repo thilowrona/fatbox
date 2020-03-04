@@ -92,7 +92,9 @@ def plot_components(G, label=True, box=True, ax = []):
 
 
 
-def plot_attribute(G, attribute, ax=[]):
+
+
+def plot_attribute(G, attribute, box=True, ax=[]):
     
     if ax == []:
         fig, ax = plt.subplots()
@@ -115,10 +117,17 @@ def plot_attribute(G, attribute, ax=[]):
     sm.set_array([])
             
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
-
+    cbar.ax.set_ylabel(attribute, rotation=270)
     plt.axis('equal')
 
 
+
+    if box == True:
+        left, bottom, width, height = (0, 0, 704, 960)
+        
+        rect = patches.Rectangle((left, bottom), width, height, linewidth=1, edgecolor='black', facecolor='none')
+        
+        ax.add_patch(rect)
 
 
 
