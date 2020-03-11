@@ -16,9 +16,10 @@ from plots import *
 G = pickle.load(open("graph.p", 'rb'))
 
 strain_rate = np.load("NearSurfaceIsotherm_335K_strain_rate.npy")
-
 G = extract_attribute(G, strain_rate, 'strain_rate')
 
+topography = np.load("NearSurfaceIsotherm_335K_topography.npy")
+G = extract_attribute(G, topography, 'topography')
 
 fig, ax = plt.subplots(1, 1, figsize=(8,10))
 plot_attribute(G, 'strain_rate', ax=ax)
@@ -47,6 +48,10 @@ for n in range(n_comp):
 
 plt.xlabel('Fault lengths')
 plt.ylabel('Strain_rates * 1e+14')
+
+
+pickle.dump(G, open('graph.p', "wb" ))
+
 
 
 
