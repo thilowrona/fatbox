@@ -3,6 +3,8 @@ import random
 import networkx as nx
 import numpy as np
 
+from edits import *
+
 
 ## EDGES
 # Count edges
@@ -138,11 +140,30 @@ def compute_edge_length(G):
 
 
 
+
+
 def total_length(G):
     length = 0
     for edge in G.edges:
         length = length + G.edges[edge]['length']
     return length
+
+
+
+
+def fault_lengths(G):    
+    noc = number_of_components(G)    
+    lengths = np.zeros(noc)    
+    for n in range(noc):    
+        lengths[n] = total_length(select_component(G, component=n))    
+    return lengths    
+    
+    
+    
+    
+    
+    
+
 
 
 
@@ -165,10 +186,24 @@ def max_value_components(G, attribute):
 
 
 
+def mean_x_components(G):    
+    mean_values = np.zeros((number_of_components(G)))    
+    for m, cc in enumerate(sorted(nx.connected_components(G))):        
+        values = np.zeros((len(cc)))        
+        for n, node in enumerate(cc):            
+            values[n] = G.nodes[node]['pos'][0]           
+        mean_values[m] = np.mean(values)        
+    return mean_values
 
 
-
-
+def mean_y_components(G):    
+    mean_values = np.zeros((number_of_components(G)))    
+    for m, cc in enumerate(sorted(nx.connected_components(G))):        
+        values = np.zeros((len(cc)))        
+        for n, node in enumerate(cc):            
+            values[n] = G.nodes[node]['pos'][1]           
+        mean_values[m] = np.mean(values)        
+    return mean_values
 
 
 

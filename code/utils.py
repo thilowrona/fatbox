@@ -38,7 +38,6 @@ def get_labels(G, attribute):
 
 
 
-
 def writeObjects(G,
                  scalar = [], name = '', power = 1,
                  scalar2 = [], name2 = '', power2 = 1,
