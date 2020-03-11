@@ -16,8 +16,9 @@ from utils import *
 
 G = pickle.load(open("graph.p", 'rb'))
 
+G = simplify(G, 5)
 
-
+highest_node = max(list(G.nodes))+1
 
 
 
