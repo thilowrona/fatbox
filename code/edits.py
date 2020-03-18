@@ -94,12 +94,7 @@ def add_edges(G, N):
 
 
 
-def remove_small_components(G, minimum_size = 10):
-    for cc in sorted(nx.connected_components(G)):
-        if len(cc) < minimum_size:
-            for n in cc:
-                G.remove_node(n)
-    return G
+
 
 
 
@@ -119,7 +114,21 @@ def select_component(G, component=0):
 
 
 
+def remove_component(G, component):
+    for cc in sorted(nx.connected_components(G)):
+        for n in cc:
+            if G.nodes[n]['component'] == component:
+                G.remove_node(n)
+    return G
 
+
+
+def remove_small_components(G, minimum_size = 10):
+    for cc in sorted(nx.connected_components(G)):
+        if len(cc) < minimum_size:
+            for n in cc:
+                G.remove_node(n)
+    return G
 
 
 

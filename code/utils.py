@@ -41,6 +41,7 @@ def get_labels(G, attribute):
 def writeObjects(G,
                  scalar = [], name = '', power = 1,
                  scalar2 = [], name2 = '', power2 = 1,
+                 scalar3 = [], name3 = '', power3 = 1,
                  nodeLabel = [],
                  fileout = 'test'):
     """
@@ -61,9 +62,9 @@ def writeObjects(G,
     coordinates = np.zeros((highest_node,3))
     
     for n, node in enumerate(G):
-        coordinates[node,0]  = G.nodes[node]['pos'][0]
-        coordinates[node,1]  = G.nodes[node]['pos'][1]
-        coordinates[node,2]  = G.nodes[node]['topography']
+        coordinates[node,0]  = G.nodes[node]['x']
+        coordinates[node,1]  = G.nodes[node]['y']
+        coordinates[node,2]  = G.nodes[node]['z']
                        
             
     def generate_points2():
@@ -109,6 +110,13 @@ def writeObjects(G,
         for i, j in enumerate(scalar2):   # i becomes 0,1,2,..., and j runs through scalar2
             attribute2.SetValue(i,j**power2)
 
+    if scalar3:
+        attribute3 = vtk.vtkFloatArray()
+        attribute3.SetNumberOfComponents(1)
+        attribute3.SetName(name3)
+        attribute3.SetNumberOfTuples(len(scalar3))
+        for i, j in enumerate(scalar3):   # i becomes 0,1,2,..., and j runs through scalar2
+            attribute3.SetValue(i,j**power3)
 
     polydata = vtk.vtkPolyData()
     polydata.SetPoints(points)
@@ -118,6 +126,8 @@ def writeObjects(G,
         polydata.GetPointData().AddArray(attribute)
     if scalar2:
         polydata.GetPointData().AddArray(attribute2)
+    if scalar3:
+        polydata.GetPointData().AddArray(attribute3)        
     if nodeLabel:
         polydata.GetPointData().AddArray(label)
     writer = vtk.vtkXMLPolyDataWriter()
