@@ -41,11 +41,6 @@ def add_edges(G, N):
             G.add_edge(node, closest)
 
 
-
-
-
-
-
     def clostest_except(G, node, cn):
         threshold = 1000000
         for other in G:
@@ -55,7 +50,6 @@ def add_edges(G, N):
                     threshold = d
                     index = other
         return index, threshold
-
 
 
     for node in G:

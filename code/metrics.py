@@ -39,6 +39,15 @@ def distance_between_nodes(G, n0, n1):
     return math.sqrt((x0 -x1)**2+(y0-y1)**2)
 
 
+
+def distance_between_nodes2(G, n0, n1):
+    x0 = G.nodes[n0]['x']
+    y0 = G.nodes[n0]['y']
+    x1 = G.nodes[n1]['x']
+    y1 = G.nodes[n1]['y']     
+    return math.sqrt((x0 -x1)**2+(y0-y1)**2)
+
+
 def strike_between_nodes(G, n0, n1):
     x0, y0 = G.nodes[n0]['pos']
     x1, y1 = G.nodes[n1]['pos']
@@ -134,15 +143,11 @@ def calculate_strikes_in_neighborhood(G, neighbors = 3):
 ## EDGES
 def compute_edge_length(G):
     for edge in G.edges:
-        G.edges[edge]['length'] = distance_between_nodes(G, edge[0], edge[1])
+        G.edges[edge]['length'] = distance_between_nodes2(G, edge[0], edge[1])
     return G
 
-
-
-
-
-
-def total_length(G):
+def total_length(G):    
+    G = compute_edge_length(G)    
     length = 0
     for edge in G.edges:
         length = length + G.edges[edge]['length']

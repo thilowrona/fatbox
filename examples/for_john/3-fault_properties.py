@@ -11,7 +11,7 @@ from metrics import *
 from plots import *
 
 
-filename = "v10w2h55_z95_10MYR"
+filename = "v5w4h60_z95_20MYR"
 
 G = pickle.load(open("./graphs/graph_" + filename + ".p", 'rb'))
 
@@ -33,7 +33,8 @@ G = extract_attribute(G, plastic_strain, 'plastic_strain')
 
 
 #fig, ax = plt.subplots(1, 1, figsize=(8,10))
-#plot_attribute(G, 'plastic_strain', ax=ax)
+#ax.imshow(plastic_strain)
+#plot_components(G, 'plastic_strain', ax=ax)
 
 
 #for node in G:
@@ -48,41 +49,39 @@ G = compute_edge_length(G)
 n_comp = number_of_components(G)
 
 lengths = np.zeros(n_comp)
-strain_rates = np.zeros(n_comp)
-#plastic_strain = np.zeros(n_comp)
+plastic_strain = np.zeros(n_comp)
 
 
 for n in range(n_comp):
-    lengths[n] = total_length(select_component(G, component=n))
-    strain_rates[n] = max_value_nodes(select_component(G, component=n), 'strain_rate')
-#    plastic_strain[n] = max_value_nodes(select_component(G, component=n), 'plastic_strain')
+    lengths[n] = total_length(select_component(G, component=n))/1000
+    plastic_strain[n] = max_value_nodes(select_component(G, component=n), 'plastic_strain')
 
 
 
 fig, ax = plt.subplots(1, 1, figsize=(8,8))
 for n in range(n_comp):
-    plt.scatter(lengths[n], 1e14*strain_rates[n])
+    plt.scatter(lengths[n], plastic_strain[n])
+
+plt.xlabel('Fault lengths [km]')
+plt.ylabel('Strain_rates * 1e+14')
+plt.savefig("./images/Fault_length_vs_plastic_strain" + filename +  ".png", dpi=300)
+
+
+
+fig, ax = plt.subplots(1, 1, figsize=(8,8))
+for n in range(n_comp):
+    plt.scatter(lengths[n], plastic_strain[n])
 
 plt.xlabel('Fault lengths')
-plt.ylabel('Strain_rates * 1e+14')
-plt.savefig("./images/Strain_rate-fault_length_" + filename +  ".png", dpi=300)
-
-
-
-#fig, ax = plt.subplots(1, 1, figsize=(8,8))
-#for n in range(n_comp):
-#    plt.scatter(lengths[n], plastic_strain[n])
-#
-#plt.xlabel('Fault lengths')
-#plt.ylabel('Plastic strain')
-#plt.savefig('./images/Plastic_strain-fault_length_v5w2h55_z95_20MYR.png', dpi=300)
+plt.ylabel('Plastic strain')
+plt.savefig('./images/Plastic_strain-fault_length_v5w2h55_z95_20MYR.png', dpi=300)
 
 
 pickle.dump(G, open("./graphs/graph_" + filename + ".p", "wb" ))
 
 
 import pandas as pd
-df = pd.DataFrame(data = np.column_stack((lengths, strain_rates)), index=range(n_comp), columns = ['Length', 'Strain rate'])
+df = pd.DataFrame(data = np.column_stack((lengths, plastic_strain)), index=range(n_comp), columns = ['Length', 'Strain rate'])
 df.index.name ='Fault'
 
 df.to_csv(filename + ".csv")
