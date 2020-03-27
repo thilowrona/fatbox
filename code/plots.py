@@ -16,6 +16,15 @@ from utils import *
 
 
 
+def plot_comparison(data_sets, colorbar=False):
+    
+    count = len(data_sets)
+    
+    fig, axs = plt.subplots(1, count, figsize=(12,6))
+    for n, data in enumerate(data_sets):
+        axs[n].imshow(data)
+        if colorbar:
+            axs[n].colorbar()
 
 
 
