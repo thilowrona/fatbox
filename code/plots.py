@@ -16,11 +16,31 @@ from utils import *
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def plot_comparison(data_sets, colorbar=False):
     
     count = len(data_sets)
     
-    fig, axs = plt.subplots(1, count, figsize=(12,6))
+    fig, axs = plt.subplots(count, 1, figsize=(12,12))
     for n, data in enumerate(data_sets):
         axs[n].imshow(data)
         if colorbar:
@@ -30,20 +50,42 @@ def plot_comparison(data_sets, colorbar=False):
 
 
 
-
-
-
-
-
-
-
-
-
-def plot_components(G, label=True, box=True, ax = []):
+def plot(G, ax, color='red', with_labels=False):
+    nx.draw(G,
+            pos = nx.get_node_attributes(G, 'pos'),
+            node_size = 1,
+            node_color = color,
+            with_labels=with_labels,
+            ax = ax)
     
-    if ax == []:
-        fig, ax = plt.subplots()
+    # plt.axis('equal')    
+    ax.axis('on')
+
+
+
+
+
+
+
+
+
+
+
+
+def plot_components(G, ax, crop=False, edge=0.1, label=True, filename=False):
         
+    
+    if crop:
+        
+        (x_min, x_max), (z_min, z_max) = calculate_crop(G, edge=edge)        
+        
+        for node in G:              
+            G.nodes[node]['pos'] = (G.nodes[node]['pos'][0]-x_min, G.nodes[node]['pos'][1]-z_min)
+
+
+    
+    
+    
     n_comp = 1000
             
     palette = sns.color_palette(None, 2*n_comp)
@@ -61,10 +103,11 @@ def plot_components(G, label=True, box=True, ax = []):
     nx.draw(G,
             pos = nx.get_node_attributes(G, 'pos'),
             node_color = node_color,
-            node_size = 1,
+            node_size = 0.5,
             ax = ax)
     
-    plt.axis('equal')
+    # ax.axis('equal')
+    ax.axis('on')
     
     
     
@@ -89,13 +132,9 @@ def plot_components(G, label=True, box=True, ax = []):
             
             ax.text(y_avg, x_avg, label, fontsize = 15, color = palette[G.nodes[n]['component']])
       
-        
-    if box == True:
-        left, bottom, width, height = (0, 0, 704, 960)
-        
-        rect = patches.Rectangle((left, bottom), width, height, linewidth=1, edgecolor='black', facecolor='none')
-        
-        ax.add_patch(rect)
+
+    if filename:
+        plt.savefig(filename, dpi=300)
 
 
 
@@ -103,19 +142,24 @@ def plot_components(G, label=True, box=True, ax = []):
 
 
 
-def plot_attribute(G, attribute, box=True, ax=[]):
+
+
+
+def plot_attribute(G, attribute, ax, crop=False, edge=0.1, filename=False):
+
+
+    if crop:        
+        (x_min, x_max), (z_min, z_max) = calculate_crop(G, edge=edge)                
+        for node in G:              
+            G.nodes[node]['pos'] = (G.nodes[node]['pos'][0]-x_min, G.nodes[node]['pos'][1]-z_min)
     
-    if ax == []:
-        fig, ax = plt.subplots()
-    
-    
-    ax = plt.gca()
     
     nx.draw(G,
             pos = nx.get_node_attributes(G, 'pos'),
-            node_color = get_labels(G, attribute),
+            node_color = np.array([G.nodes[node][attribute] for node in G.nodes]),
             node_size = 2,
             ax=ax)
+    
     
     # Colorbar
     cmap = plt.cm.viridis
@@ -129,14 +173,38 @@ def plot_attribute(G, attribute, box=True, ax=[]):
     cbar.ax.set_ylabel(attribute, rotation=270)
     plt.axis('equal')
 
+    if filename:
+        plt.savefig(filename, dpi=300)
 
 
-    if box == True:
-        left, bottom, width, height = (0, 0, 704, 960)
-        
-        rect = patches.Rectangle((left, bottom), width, height, linewidth=1, edgecolor='black', facecolor='none')
-        
-        ax.add_patch(rect)
+
+
+
+
+
+
+
+
+def plot_edge_attribute(G, attribute, ax=[]):
+
+    nx.draw_networkx_edges(G,
+                           pos = nx.get_node_attributes(G, 'pos'),
+                           edge_color = np.array([G.edges[edge][attribute] for edge in G.edges]),
+                           ax=ax)
+    
+    # Colorbar
+    cmap = plt.cm.viridis
+    vmax = max_value_edges(G, attribute)
+    vmin = min_value_edges(G, attribute)
+    
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    sm.set_array([])
+            
+    cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
+    cbar.ax.set_ylabel(attribute, rotation=270)
+    plt.axis('equal')
+    plt.gca().invert_yaxis()
+
 
 
 
@@ -189,32 +257,104 @@ def plot_rose(G):
 def cross_plot(G, var0, var1):
     
     x = np.zeros(len(G.nodes))
-    y = np.zeros(len(G.nodes))
+    z = np.zeros(len(G.nodes))
     
     
     if var0 == 'x':
         for n, node in enumerate(G):        
             x[n] = G.nodes[node]['pos'][1]
-            y[n] = G.nodes[node][var1]
+            z[n] = G.nodes[node][var1]
 
-    if var0 == 'y':
+    if var0 == 'z':
         for n, node in enumerate(G):        
             x[n] = G.nodes[node]['pos'][0]
-            y[n] = G.nodes[node][var1]        
+            z[n] = G.nodes[node][var1]        
 
     if var1 == 'x':
         for n, node in enumerate(G):        
             x[n] = G.nodes[node][var0]
-            y[n] = G.nodes[node]['pos'][1]
+            z[n] = G.nodes[node]['pos'][1]
 
-    if var1 == 'y':
+    if var1 == 'z':
         for n, node in enumerate(G):        
             x[n] = G.nodes[node][var0]
-            y[n] = G.nodes[node]['pos'][0] 
+            z[n] = G.nodes[node]['pos'][0] 
     
-    plt.plot(x, y, '.')
+    plt.plot(x, z, '.')
 
 
 
 
 
+
+def plot_matrix(matrix, rows, columns):
+
+    fig, ax = plt.subplots(1,1, figsize=(50,50))
+    ax.matshow(matrix)
+    ax.set_xticks(range(matrix.shape[1]))
+    ax.set_xticklabels(columns)
+    ax.set_yticks(range(matrix.shape[0]))
+    ax.set_yticklabels(rows)
+    
+    
+    # Loop over data dimensions and create text annotations.
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            text = ax.text(j, i, round(matrix[i, j],2),
+                           ha="center", va="center", color="k")
+
+
+
+def plot_compare_graphs(G, H):
+    fig, ax = plt.subplots(2,1)
+    plot_components(G, ax[0])
+    plot_components(H, ax[1])
+
+
+
+
+
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+
+
+
+def plot_threshold(data, threshold, value, filename=False):
+
+    fig, axs = plt.subplots(2, 1, figsize=(15,10))
+      
+    # First plot
+    p0 = axs[0].imshow(data)
+        
+    # Color bar locator
+    divider = make_axes_locatable(axs[0])
+    cax = divider.append_axes("right", size="3%", pad=0.15)    
+    cb0 = fig.colorbar(p0, ax=axs[0], cax=cax)
+    cb0.ax.plot([-1, 1], [value]*2, 'r')
+    
+    # Second plot
+    p1 = axs[1].imshow(threshold)
+    
+    # Color bar locator
+    divider = make_axes_locatable(axs[1])
+    cax = divider.append_axes("right", size="3%", pad=0.15)    
+    cb0 = fig.colorbar(p1, ax=axs[1], cax=cax)
+    
+    if filename:
+        plt.savefig(filename)
+        
+        
+        
+
+
+
+def plot_connections(matrix, rows, columns):
+    for n in range(100):    
+        threshold = n/100        
+        connections = similarity_to_connection(matrix, rows, columns, threshold)        
+        plt.scatter(threshold, len(connections), c='red')
+        plt.xlabel('Threshold')
+        plt.ylabel('Number of connections')
+        
+        
+        

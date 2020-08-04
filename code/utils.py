@@ -19,13 +19,53 @@ def get_labels(G, attribute):
     groups = set(nx.get_node_attributes(G,attribute).values())
     mapping = dict(zip(sorted(groups),count()))
     nodes = G.nodes()
-    colors = [mapping[G.nodes[n][attribute]] for n in nodes]
+    colors = [mapping[G.nodes[node][attribute]] for node in nodes]
+    
+    return np.array(colors)
+
+
+
+# Get labels for plotting edge attributes
+def get_edge_labels(G, attribute):
+
+    # get unique groups
+    groups = set(nx.get_edge_attributes(G,attribute).values())
+    mapping = dict(zip(sorted(groups),count()))
+    colors = [mapping[G.edges[e][attribute]] for e in G.edges()]
     
     return np.array(colors)
 
 
 
 
+def merge(G,H):
+    N = len(G.nodes) 
+    
+    for node in H.nodes:
+        G.add_node(node+N)
+        G.nodes[node+N]['pos'] = H.nodes[node]['pos']
+        G.nodes[node+N]['x']   = H.nodes[node]['x']
+        G.nodes[node+N]['y']   = H.nodes[node]['y']
+        G.nodes[node+N]['z']   = H.nodes[node]['z']
+        G.nodes[node+N]['edges']   = H.nodes[node]['edges']
+        G.nodes[node+N]['component']   = H.nodes[node]['component']
+        
+    for edge in H.edges:
+        G.add_edge(edge[0]+N, edge[1]+N)
+        
+    return G
+
+
+
+def topo_line(data):
+    col = data.shape[1]
+    line =  np.zeros(col)
+    for n in range(col):
+        m = 0
+        while data[m,n] == 0:
+            m = m + 1        
+        line[n] = m
+    return line.astype(int)
 
 
 
@@ -33,6 +73,15 @@ def get_labels(G, attribute):
 
 
 
+def bottom_line(data, threshold):
+    col = data.shape[1]
+    line =  np.zeros(col)
+    for n in range(col):
+        m = data.shape[0]-1
+        while data[m,n] < threshold:  
+            m = m - 1 
+        line[n] = m
+    return line.astype(int)
 
 
 
@@ -134,3 +183,48 @@ def writeObjects(G,
     writer.SetFileName(fileout+'.vtp')
     writer.SetInputData(polydata)
     writer.Write()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def func_linear(x, a, b):
+    return a*x + b
+
+
+def func_powerlaw(x, a, b):
+    return a*x**(-b)
+
+def func_exponential(x, a, b):
+    return a*np.exp(-b*x)
+
+
+def metrics(x, y, y_pred):    
+    
+    # Residuals
+    residuals = y - y_pred
+    # Residual sum of squares
+    ss_res = np.sum(residuals**2)
+    # Residual total sum of squares
+    ss_tot = np.sum((y-np.mean(y))**2)
+    # R^2
+    R2 = 1 - (ss_res / ss_tot)
+
+    return R2
