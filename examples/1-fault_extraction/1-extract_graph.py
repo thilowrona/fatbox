@@ -68,7 +68,7 @@ fig, ax = plt.subplots(1, 1, figsize=(8,10))
 plt.imshow(data)
 cb = plt.colorbar()
 cb.ax.plot([0, 1], [value]*2, 'r')
-plot_components(G_clean, ax = ax)
+plot_components(G_clean, box=False, ax = ax)
 plt.savefig('./images/graph/threshold/G_threshold_' + str(value) + '.png', dpi=300)
 
 
