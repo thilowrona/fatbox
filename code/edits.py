@@ -11,7 +11,7 @@ from metrics import *
 
 import copy
 
-import point_cloud_utils as pcu
+# import point_cloud_utils as pcu
 
 
 
@@ -34,32 +34,6 @@ def array_to_points(arr):
 
 
 
-import ngtpy
-
-def add_edges_fast(G, dim, distance, max_conn):
-    
-    objects = []
-    for node in G:
-        objects.append([G.nodes[node]['pos'][0], G.nodes[node]['pos'][1]])
-
-
-    ngtpy.create(b"tmp", dim)
-    index = ngtpy.Index(b"tmp")
-    index.batch_insert(objects)
-    index.save()
-    
-    H = G.copy()
-    
-    for n, node in enumerate(G):        
-        query = objects[n]        
-        neighbors = index.search(query, max_conn)           
-        for neighbor in neighbors:
-            if neighbor[1] < distance:
-                H.add_edge(node, neighbor[0])
-                
-    H = remove_self_edge(H)
-                
-    return H
 
 
 
