@@ -4,7 +4,10 @@ A python module for the extraction and analysis of faults (and fractures) in ras
 The basic idea of the module is to describe fault systems as graphs (or networks) consisting of nodes and edges, which allows us to define faults as components, i.e. sets of nodes connected by edges, of a graph. Nodes, which are not connected through edges, thus belong to different components (faults).
 
 
+## Examples
 
+### [Example-1](https://github.com/thilowrona/seismic_deep_learning/blob/master/tutorial-1/tutorial-1.ipynb)
+- This tutorial shows you how to extract a basic fault network from a 2-D numerical model simulating rifting
 
 ## Setup
 1. Install **Python 3**
