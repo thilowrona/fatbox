@@ -6,7 +6,7 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 ## Examples
 
-### [Example-1](https://github.com/thilowrona/seismic_deep_learning/blob/master/tutorial-1/tutorial-1.ipynb)
+### [Example 1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
 - This tutorial shows you how to extract a basic fault network from a 2-D numerical model simulating rifting
 
 ## Setup
