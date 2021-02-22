@@ -9,8 +9,21 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 
 [https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
 
-
-
+### Own machine
+You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [Ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. You can now clone the git repository:
+``` git clone https://github.com/thilowrona/fault_analysis_toolbox ```
+To load the toolbox, open an editor (e.g. spyder) and run the following lines of code:
+``` import sys ```
+``` sys.path.append('/content/fault_analysis_toolbox/code/') ```
+``` from image_processing import* ```
+``` from edits import* ```
+``` from metrics import* ```
+``` from plots import* ```
+``` from utils import* ```
+You will get an error highlighting the packages missing, something like:
+``` ModuleNotFoundError: No module named 'point_cloud_utils' ```
+You can fix this by installing the missing packages:
+``` pip3 install git+https://github.com/ulikoehler/cv_algorithms.git ```
 
 
 ## Examples
