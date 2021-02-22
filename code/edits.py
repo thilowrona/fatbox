@@ -4,7 +4,7 @@ import numpy as np
 import networkx as nx
 
 import sys
-sys.path.append('/home/wrona/fault_analysis/code/')
+sys.path.append('./fault_analysis/code/')
 
 from metrics import *
 
@@ -916,42 +916,6 @@ def similarity_to_connection(matrix, rows, columns, threshold):
 
 
 
-
-
-    
-
-def hausdorff_distance(G, H, normalize=True):
-    
-    hausdorff_dist = np.zeros((len(list(nx.connected_components(G))), len(list(nx.connected_components(H)))))
-    
-    for n, cc_0 in enumerate(sorted(nx.connected_components(G))):
-        a = np.zeros((len(cc_0), 3))   
-        for k, node in enumerate(cc_0):
-            a[k,0] = G.nodes[node]['pos'][0]
-            a[k,1] = G.nodes[node]['pos'][1]
-    
-        for m, cc_1 in enumerate(sorted(nx.connected_components(H))):
-            b = np.zeros((len(cc_1), 3))   
-            for l, node in enumerate(cc_1):
-                b[l,0] = H.nodes[node]['pos'][0]
-                b[l,1] = H.nodes[node]['pos'][1]
-    
-    
-            # Compute each one sided squared Hausdorff distances
-            hausdorff_a_to_b = pcu.hausdorff(a, b)
-            hausdorff_b_to_a = pcu.hausdorff(b, a)
-            
-            # Take a max of the one sided squared  distances to get the two sided Hausdorff distance
-            hausdorff_dist[n,m] = max(hausdorff_a_to_b, hausdorff_b_to_a)
-    
-    
-    if normalize:
-        minimum = np.min(hausdorff_dist)
-        maximum = np.max(hausdorff_dist)
-        
-        hausdorff_dist = (hausdorff_dist-minimum)/(maximum-minimum)
-    
-    return hausdorff_dist
 
 
     
