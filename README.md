@@ -7,7 +7,7 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 ### Online
 One of the easiest ways of getting started is with Jupyter notebooks - an awesome combination of code, documentation and output. The easiest way is to run them with Google Colab, so you don't need any special hardware or software. Just try it out:
 
-[https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
+[https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
 
 ### Own machine
 You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV in the terminal like this:
@@ -51,7 +51,7 @@ With Anaconda you probably won't need to install many additional packages, as mo
 
 ## Examples
 
-### [Example 1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
+### [Example 1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
 - This tutorial shows you how to extract a basic fault network from a 2-D numerical model simulating rifting
 
 
