@@ -15,7 +15,6 @@ You can also use the fault analysis toolbox on your own machine. All you need is
 ``` git clone https://github.com/thilowrona/fault_analysis_toolbox ```
 
 To load the toolbox, open an editor (e.g. spyder) and run the following lines of code:
-
 ```
 import sys
 sys.path.append('./fault_analysis_toolbox/code/')
@@ -28,13 +27,14 @@ from metrics import*
 from plots import*
 from utils import*
 ```
-
-
-
-You will get an error highlighting the packages missing, something like:
-``` ModuleNotFoundError: No module named 'vtk' ```
+You will probably get an error highlighting the packages missing, something like:
+``` 
+ModuleNotFoundError: No module named 'vtk' 
+```
 You can easily fix this by installing the missing packages, e.g.:
-``` pip3 install vtk ```
+```
+pip3 install vtk
+```
 
 
 ## Examples
