@@ -52,6 +52,6 @@ With Anaconda you probably won't need to install many additional packages, as mo
 ## Examples
 
 ### [1-Fault extraction](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
-- This tutorial shows you how to extract a basic fault network from a 2-D numerical model simulating rifting
+- This tutorial shows you how to extract a basic fault network from a 2-D slice of a numerical model simulating rifting
 
 
