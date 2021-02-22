@@ -18,7 +18,7 @@ and vtk like this:
 ```
 pip install vtk
 ```
-Now you can clone the git repository containing the fault analsysis toolbox:
+Now you can clone the git repository containing the fault analysis toolbox:
 
 ``` git clone https://github.com/thilowrona/fault_analysis_toolbox ```
 
