@@ -10,7 +10,15 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 [https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
 
 ### Own machine
-You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [Ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. You can now clone the git repository:
+You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [Ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV like this:
+```
+conda install -c conda-forge opencv
+```
+and vtk like this:
+```
+pip install vtk
+```
+Now you can clone the git repository of the fault analsysis toolbox:
 
 ``` git clone https://github.com/thilowrona/fault_analysis_toolbox ```
 
@@ -19,7 +27,7 @@ To load the toolbox, open an editor (e.g. spyder) and run the following lines of
 import sys
 sys.path.append('./fault_analysis_toolbox/code/')
 ```
-This shows the path to the toolbox and these are the files containing the code (each one loading the necessary packages at the top):
+This sets the path to the toolbox and below we import the files containing the code (each one importing the necessary packages):
 ```
 from image_processing import*
 from edits import*
@@ -27,13 +35,13 @@ from metrics import*
 from plots import*
 from utils import*
 ```
-You will probably get an error highlighting a package that is missing, something like:
+If a package is missing, you will get an error highlighting a package that is missing, something like:
 ``` 
-ModuleNotFoundError: No module named 'cv_algorithms' 
+ModuleNotFoundError: No module named 'vtk' 
 ```
 You can easily fix this by installing the missing package, e.g.:
 ```
-pip3 install git+https://github.com/ulikoehler/cv_algorithms.git
+pip install vtk
 ```
 With Anaconda you probably won't need to install many additional packages, as most of the packages that we use are included.
 
