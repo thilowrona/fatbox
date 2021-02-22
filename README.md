@@ -16,7 +16,7 @@ You can also use the fault analysis toolbox on your own machine. All you need is
 
 To load the toolbox, open an editor (e.g. spyder) and run the following lines of code:
 
-``` import sys ```
+```ruby import sys ```
 ``` sys.path.append('/content/fault_analysis_toolbox/code/') ```
 ``` from image_processing import* ```
 ``` from edits import* ```
