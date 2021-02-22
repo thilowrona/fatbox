@@ -19,7 +19,7 @@ To load the toolbox, open an editor (e.g. spyder) and run the following lines of
 import sys
 sys.path.append('./fault_analysis_toolbox/code/')
 ```
-This shows the path to the toolbox and these are the files containing the code:
+This shows the path to the toolbox and these are the files containing the code (each one loading the necessary packages at the top):
 ```
 from image_processing import*
 from edits import*
@@ -27,14 +27,18 @@ from metrics import*
 from plots import*
 from utils import*
 ```
-You will probably get an error highlighting the packages missing, something like:
+You will probably get an error highlighting a package that is missing, something like:
 ``` 
-ModuleNotFoundError: No module named 'vtk' 
+ModuleNotFoundError: No module named 'cv_algorithms' 
 ```
-You can easily fix this by installing the missing packages, e.g.:
+You can easily fix this by installing the missing package, e.g.:
 ```
-pip3 install vtk
+pip3 install git+https://github.com/ulikoehler/cv_algorithms.git
 ```
+With Anaconda you probably won't need to install many additional packages, as most of the packages that we use are included.
+
+
+
 
 
 ## Examples
