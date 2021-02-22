@@ -3,6 +3,13 @@ A python module for the extraction and analysis of faults (and fractures) in ras
 
 The basic idea of the module is to describe fault systems as graphs (or networks) consisting of nodes and edges, which allows us to define faults as components, i.e. sets of nodes connected by edges, of a graph. Nodes, which are not connected through edges, thus belong to different components (faults).
 
+## Getting started
+### Online
+One of the easiest ways of getting started is with Jupyter notebooks - an awesome combination of code, documentation and output. You can even run them in the cloud using Google Colab, so you don't need any special hard- or software. You can try it out here: [https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
+
+
+
+
 
 ## Examples
 
