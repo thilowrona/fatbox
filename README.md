@@ -17,21 +17,19 @@ You can also use the fault analysis toolbox on your own machine. All you need is
 To load the toolbox, open an editor (e.g. spyder) and run the following lines of code:
 
 ```ruby
-require 'redcarpet'
-markdown = Redcarpet.new("Hello World!")
-puts markdown.to_html
-```
-
-``` import sys
+import sys
 sys.path.append('/content/fault_analysis_toolbox/code/') 
 ```
 
+```ruby
+from image_processing import*
+from edits import*
+from metrics import*
+from plots import*
+from utils import*
+```
 
-``` from image_processing import* ```
-``` from edits import* ```
-``` from metrics import* ```
-``` from plots import* ```
-``` from utils import* ```
+
 
 You will get an error highlighting the packages missing, something like:
 ``` ModuleNotFoundError: No module named 'point_cloud_utils' ```
