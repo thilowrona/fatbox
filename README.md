@@ -18,9 +18,9 @@ To load the toolbox, open an editor (e.g. spyder) and run the following lines of
 
 ```
 import sys
-sys.path.append('/content/fault_analysis_toolbox/code/') 
+sys.path.append('./fault_analysis_toolbox/code/')
 ```
-
+This shows the path to the toolbox and these are the files containing the code:
 ```
 from image_processing import*
 from edits import*
@@ -32,9 +32,9 @@ from utils import*
 
 
 You will get an error highlighting the packages missing, something like:
-``` ModuleNotFoundError: No module named 'point_cloud_utils' ```
-You can fix this by installing the missing packages:
-``` pip3 install git+https://github.com/ulikoehler/cv_algorithms.git ```
+``` ModuleNotFoundError: No module named 'vtk' ```
+You can easily fix this by installing the missing packages, e.g.:
+``` pip3 install vtk ```
 
 
 ## Examples
