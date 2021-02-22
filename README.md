@@ -5,7 +5,9 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 ## Getting started
 ### Online
-One of the easiest ways of getting started is with Jupyter notebooks - an awesome combination of code, documentation and output. You can even run them in the cloud using Google Colab, so you don't need any special hard- or software. You can try it out here: [https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
+One of the easiest ways of getting started is with Jupyter notebooks - an awesome combination of code, documentation and output. The easiest way is to run them with Google Colab, so you don't need any special hardware or software. Just try it out:
+
+[https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
 
 
 
