@@ -16,8 +16,17 @@ You can also use the fault analysis toolbox on your own machine. All you need is
 
 To load the toolbox, open an editor (e.g. spyder) and run the following lines of code:
 
+```ruby
+require 'redcarpet'
+markdown = Redcarpet.new("Hello World!")
+puts markdown.to_html
+```
+
 ``` import sys
-sys.path.append('/content/fault_analysis_toolbox/code/') ```
+sys.path.append('/content/fault_analysis_toolbox/code/') 
+```
+
+
 ``` from image_processing import* ```
 ``` from edits import* ```
 ``` from metrics import* ```
