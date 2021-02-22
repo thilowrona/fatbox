@@ -10,7 +10,7 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 [https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
 
 ### Own machine
-You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [Ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV like this:
+You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV in the terminal like this:
 ```
 conda install -c conda-forge opencv
 ```
@@ -22,7 +22,7 @@ Now you can clone the git repository containing the fault analsysis toolbox:
 
 ``` git clone https://github.com/thilowrona/fault_analysis_toolbox ```
 
-To load the toolbox, open an editor (e.g. spyder) and run the following lines of code:
+To load the toolbox, open a Python editor (e.g. spyder) and run the following lines of code:
 ```
 import sys
 sys.path.append('./fault_analysis_toolbox/code/')
@@ -39,7 +39,7 @@ If a package is missing, you will get an error highlighting a package that is mi
 ``` 
 ModuleNotFoundError: No module named 'vtk' 
 ```
-You can easily fix this by installing the missing package, e.g.:
+You can easily fix this by installing the missing package using either pip or Anaconda:
 ```
 pip install vtk
 ```
