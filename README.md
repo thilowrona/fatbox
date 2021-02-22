@@ -54,28 +54,4 @@ With Anaconda you probably won't need to install many additional packages, as mo
 ### [Example 1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/example_1/example_1.ipynb)
 - This tutorial shows you how to extract a basic fault network from a 2-D numerical model simulating rifting
 
-## Setup
-1. Install **Python 3**
-2. Install required packages listed in ```requirements.txt```. You can install these packages with:
-
-``` pip install -r /path/to/requirements.txt ```
-
-3. Clone git repository:
-
-```git clone https://github.com/thilowrona/fault_analysis/```
-
-
-
-## Fault extraction
-![Image description](/examples/1-fault_extraction/flowchart.png)
-
-The extraction of faults from raster data typically involves these three steps: (1) pre-processing, (2) thresholding, and (3) clustering. The basic idea is that we first clean our data, then identify areas which belong to faults, and finally classify these areas into faults.
-
-
-
-## Fault analysis
-Once we have extracted a fault network, we can perform many of the steps of a fault analysis usign the functions of this module. For example, we can calculate fault lengths as the sum of the edge lengths (i.e. distances between connected nodes) of each component.
-
-
-
 
