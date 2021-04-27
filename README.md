@@ -10,10 +10,10 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 ### Online tutorials
 One of the easiest ways of getting started is with Jupyter notebooks - an awesome combination of code, documentation and output. The easiest way is to run them with Google Colab, so you don't need any special hardware or software. Just try it out:
 
-### [Tutorial 1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
+### [Tutorial 1: Extraction](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
 - This tutorial shows how to extract a fault network from a 2-D slice of a numerical model
 
-### [Tutorial 2](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-fault_correlation/2-fault_correlation.ipynb)
+### [Tutorial 2: Time stepping](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-time_stepping/2-time_stepping.ipynb)
 - This tutorial shows how to track fault networks through time in numerical models
 
 ### [Tutorial 3](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/3-slip/3-slip.ipynb)
