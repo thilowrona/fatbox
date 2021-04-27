@@ -25,7 +25,7 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 
 
 
-### Extra
+### Extra tutorials
 ### [Tutorial E1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/E1-manual_extraction/E1-manual_extraction.ipynb)
 - This tutorial shows how to map fault networks by hand
 
@@ -77,10 +77,13 @@ With Anaconda you probably won't need to install many additional packages, as mo
 
 
 
-
-## Examples
-
-### [1-Fault extraction](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
-- This tutorial shows you how to extract a basic fault network from a 2-D slice of a numerical model simulating rifting
-
-
+# Citation
+If you use this project in your research or wish to refer to the results of the tutorials, please use the following BibTeX entry.
+```
+@misc{fat2021,
+  author =       {Thilo Wrona, Sascha Brune},
+  title =        {{Fault analysis toolbox}},
+  howpublished = {\url{https://github.com/thilowrona/fault_analysis_toolbox}},
+  year =         {2021}
+}
+```
