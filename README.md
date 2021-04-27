@@ -38,7 +38,7 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 
 
 
-### Your own machine
+## Your own machine
 You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [Ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV in the terminal like this:
 ```
 conda install -c conda-forge opencv
@@ -78,7 +78,7 @@ With Anaconda you probably won't need to install many additional packages, as mo
 
 
 
-# Citation
+## Citation
 If you use this project in your research or wish to refer to the results of the tutorials, please use the following BibTeX entry.
 ```
 @misc{fat2021,
