@@ -7,10 +7,12 @@ A python module for the extraction and analysis of faults (and fractures) in ras
 The basic idea of the module is to describe fault systems as graphs (or networks) consisting of nodes and edges, which allows us to define faults as components, i.e. sets of nodes connected by edges, of a graph. Nodes, which are not connected through edges, thus belong to different components (faults).
 
 ## Getting started
-### Online
+### Online tutorials
 One of the easiest ways of getting started is with Jupyter notebooks - an awesome combination of code, documentation and output. The easiest way is to run them with Google Colab, so you don't need any special hardware or software. Just try it out:
 
-[https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
+### [Tutorial 1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1-fault_extraction.ipynb)
+- This tutorial shows how to extract a fault network from 2-D raster data
+
 
 ### Own machine
 You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV in the terminal like this:
