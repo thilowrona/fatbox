@@ -25,7 +25,7 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 
 
 
-### Exra
+### Extra
 ### [Tutorial E1](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/E1-manual_extraction/E1-manual_extraction.ipynb)
 - This tutorial shows how to map fault networks by hand
 
