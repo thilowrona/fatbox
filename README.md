@@ -39,13 +39,14 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 
 
 ### Own machine
-You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV in the terminal like this:
+You can also use the fault analysis toolbox on your own machine. All you need is Python 3 including a couple of packages. I would recommend to install [Ananconda](https://docs.anaconda.com/anaconda/install/), which gives you an enviroment with most of the packages and tools that we will use. Two are however missing. You can install OpenCV in the terminal like this:
 ```
 conda install -c conda-forge opencv
 ```
-and vtk like this:
+and vtk and cv_algorithms like this:
 ```
 pip install vtk
+pip install git+https://github.com/ulikoehler/cv_algorithms.git 
 ```
 Now you can clone the git repository containing the fault analysis toolbox:
 
