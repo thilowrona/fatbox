@@ -349,7 +349,7 @@ def plot_rose(G, ax=[]):
 
     
     ax.bar(np.deg2rad(np.arange(0, 360, 10)), two_halves, 
-           width=np.deg2rad(10), bottom=0.0, color=cmap, edgecolor='k', vmax=1400000)
+           width=np.deg2rad(10), bottom=0.0, color=cmap, edgecolor='k')
 
 #    ax.set_rgrids(np.arange(1, two_halves.max() + 1, 2), angle=0, weight= 'black')
     ax.set_title('Rose Diagram', y=1.10, fontsize=15)
