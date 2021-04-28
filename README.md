@@ -16,13 +16,13 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 ### [Tutorial 2: Fault properties](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-fault_properties/2_fault_properties.ipynb)
 - This tutorial shows how to calculate the strike and length of the extracted faults
 
-### [Tutorial 2: Time stepping](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-time_stepping/2-time_stepping.ipynb)
+### [Tutorial 3: Time stepping](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-time_stepping/2-time_stepping.ipynb)
 - This tutorial shows how to track fault networks through time in numerical models
 
-### [Tutorial 3: Slip](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/3-slip/3-slip.ipynb)
+### [Tutorial 4: Slip](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/3-slip/3-slip.ipynb)
 - This tutorial shows how to calculate fault slip from numerical models
 
-### [Tutorial 4: Displacement](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/4-displacement/4-displacement.ipynb)
+### [Tutorial 5: Displacement](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/4-displacement/4-displacement.ipynb)
 - This tutorial shows how to sum up fault slip to displacement through time
 
 
