@@ -13,7 +13,7 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 ### [Tutorial 1: Fault extraction](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/1-fault_extraction/1_fault_extraction.ipynb)
 - This tutorial shows how to extract a fault network from a 2-D slice of a numerical model
 
-### [Tutorial 2: Fault properties](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-time_stepping/2-time_stepping.ipynb)
+### [Tutorial 2: Fault properties](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-fault_properties/2_fault_properties.ipynb)
 - This tutorial shows how to calculate the strike and length of the extracted faults
 
 ### [Tutorial 2: Time stepping](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-time_stepping/2-time_stepping.ipynb)
