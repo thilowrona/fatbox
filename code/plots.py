@@ -290,12 +290,18 @@ def plot_edge_attribute(G, attribute, ax=[]):
     if ax==[]:
         fig, ax = plt.subplots() 
 
+    nx.draw(G,
+            pos = nx.get_node_attributes(G, 'pos'),
+            node_size = 0.001,
+            ax=ax)
+
     nx.draw_networkx_edges(G,
                            pos = nx.get_node_attributes(G, 'pos'),
                            edge_color = np.array([G.edges[edge][attribute] for edge in G.edges]),
                            edge_cmap=plt.cm.twilight_shifted,
                            ax=ax)
-    
+    ax.axis('equal')
+
     # Colorbar
     cmap = plt.cm.twilight_shifted
     vmax = max_value_edges(G, attribute)
