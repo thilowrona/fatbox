@@ -858,3 +858,8 @@ def get_fault_labels(G):
     for node in G:
         labels.add(G.nodes[node]['fault'])
     return sorted(list(labels))   
+
+
+def get_fault(G, n):
+    nodes = [node for node in G if G.nodes[node]['fault']==n]
+    return G.subgraph(nodes)
