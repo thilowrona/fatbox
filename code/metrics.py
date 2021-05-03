@@ -850,3 +850,11 @@ def split_graph_by_polarity(G):
         else:
             G_0.remove_node(node)
     return G_0, G_1
+
+
+
+def get_fault_labels(G):
+    labels=set()
+    for node in G:
+        labels.add(G.nodes[node]['fault'])
+    return sorted(list(labels))   
