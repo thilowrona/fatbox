@@ -271,7 +271,6 @@ def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], crop=False, node_size=
             
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
     cbar.ax.set_ylabel(attribute, rotation=270)
-    plt.axis('equal')
 
     if filename:
         plt.savefig(filename, dpi=300)
