@@ -25,7 +25,7 @@ One of the easiest ways of getting started is with Jupyter notebooks - an awesom
 ### [Tutorial 5: Displacement](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/5-displacement/5-displacement.ipynb)
 - This tutorial shows how to sum up fault slip to displacement through time
 
-### [Tutorial 6: Fault evolution](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/5-evolution/5-evolution.ipynb)
+### [Tutorial 6: Fault evolution](https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/6-evolution/6-evolution.ipynb)
 - This tutorial shows how to visualize the evolution of our faults with time
 
 
