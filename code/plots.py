@@ -544,8 +544,7 @@ def bar_plot(attribute, faults, times, steps=[], ax=[]):
 
 
 
-
-def stack_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
+def stack_plot(attribute, faults, times, steps=[], ax=[]):
     
     colors = get_colors()
     
@@ -556,36 +555,18 @@ def stack_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
         steps = range(attribute.shape[1])   
     
     max_fault = int(np.nanmax(faults))
-   
-    
+
     x = np.arange(len(steps))
-    
-    
     y = np.zeros((max_fault, len(steps)))
-    
-    
         
     for N in range(max_fault):
-    
-        
         for n in steps:
             row = faults[:,n]
             if N in faults[:,n]:
                 index = np.where(row==N)[0][0]
                 y[N,n] = attribute[index,n]
-    
-     
             
     ax.stackplot(x, y, fc=colors[:max_fault,:], alpha=0.75, edgecolor='white', linewidth=0.5)
-    
-    if title!=[]:
-        ax.set_title(title)    
-
-    ax.set_xlabel('Time')
-    ax.set_ylabel(name)
-    
-    
-    
     
 
 
