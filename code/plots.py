@@ -594,3 +594,231 @@ def stack_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
     
     
     
+
+
+
+def plot_width(G, ax, width, tips=True, plot=False):
+    
+    
+    pos=nx.get_node_attributes(G, 'pos')
+    
+    n_comp = 10000
+            
+    palette = sns.color_palette(None, 2*n_comp)    
+    
+    colors = get_node_colors(G, 'fault')
+    
+    
+        
+        
+    
+    def get_points(u):      
+    
+        u0 = np.array(pos[u[0]])
+        u1 = np.array(pos[u[1]])  
+        
+        u_vec  = u0-u1
+        
+        u_perp = np.array([-u_vec[1], u_vec[0]])
+        u_perp = u_perp/np.linalg.norm(u_perp)
+    
+        u0a = u0 - u_perp*width[u[0]]
+        u0b = u0 + u_perp*width[u[0]]
+    
+        u1a = u1 - u_perp*width[u[1]]
+        u1b = u1 + u_perp*width[u[1]] 
+        
+        return u0a, u0b, u1a, u1b 
+    
+    
+    
+    def get_intersect(a1, a2, b1, b2):
+        """ 
+        Returns the point of intersection of the lines passing through a2,a1 and b2,b1.
+        a1: [x, y] a point on the first line
+        a2: [x, y] another point on the first line
+        b1: [x, y] a point on the second line
+        b2: [x, y] another point on the second line
+        """
+        s = np.vstack([a1,a2,b1,b2])        # s for stacked
+        h = np.hstack((s, np.ones((4, 1)))) # h for homogeneous
+        l1 = np.cross(h[0], h[1])           # get first line
+        l2 = np.cross(h[2], h[3])           # get second line
+        x, y, z = np.cross(l1, l2)          # point of intersection
+        if z == 0:                          # lines are parallel
+            return (float('inf'), float('inf'))
+        return np.array([x/z, y/z])
+    
+        
+    def clockwiseangle_and_distance(origin, point):    
+        refvec = [0,1]
+        # Vector between point and the origin: v = p - o
+        vector = [point[0]-origin[0], point[1]-origin[1]]
+        # Length of vector: ||v||
+        lenvector = math.hypot(vector[0], vector[1])
+        # If length is zero there is no angle
+        if lenvector == 0:
+            return -math.pi, 0
+        # Normalize vector: v/||v||
+        normalized = [vector[0]/lenvector, vector[1]/lenvector]
+        dotprod  = normalized[0]*refvec[0] + normalized[1]*refvec[1]     # x1*x2 + y1*y2
+        diffprod = refvec[1]*normalized[0] - refvec[0]*normalized[1]     # x1*y2 - y1*x2
+        angle = math.atan2(diffprod, dotprod)
+        # Negative angles represent counter-clockwise angles so we need to subtract them 
+        # from 2*pi (360 degrees)
+        if angle < 0:
+            return 2*math.pi+angle, lenvector
+        # I return first the angle because that's the primary sorting criterium
+        # but if two vectors have the same angle then the shorter distance should come first.
+        return angle, lenvector        
+         
+    
+    def get_edges(G, node):
+        neighbors = list(G.neighbors(node))
+        pts = [G.nodes[neighbor]['pos'] for neighbor in neighbors]
+        pts, neighbors = zip(*sorted(zip(pts, neighbors), key=lambda x: clockwiseangle_and_distance(G.nodes[node]['pos'], x[0])))
+        edges = [(node, neighbor) for neighbor in neighbors]
+        return edges
+    
+    
+            
+            
+        
+        
+    for node, color in zip(G, colors):
+        if tips==True and G.degree(node) == 1:
+    
+            edge = get_edges(G, node)[0]
+    
+            node0 = np.array(pos[edge[0]])
+            node1 = np.array(pos[edge[1]]) 
+    
+            vec  = node0-node1        
+            vec_perp = np.array([-vec[1], vec[0]])
+            vec_perp = vec_perp/np.linalg.norm(vec_perp)        
+            
+            vec_pos = node0 + vec_perp*width[edge[0]]
+            vec_neg = node0 - vec_perp*width[edge[0]]
+        
+            stack = np.vstack((vec_pos, 
+                               node0+vec, 
+                               vec_neg, 
+                               vec_pos))
+
+            polygon = Polygon(stack, True, facecolor=color, alpha=1) 
+            p = PatchCollection([polygon], match_original=True)
+            ax.add_collection(p) 
+            
+        
+        
+        
+        if G.degree(node) == 2:
+            
+            edges = get_edges(G, node)
+
+
+            points = []
+            for edge in edges:
+                points.append(get_points(edge))       
+
+          
+            intersects = []        
+            intersects.append(get_intersect(points[0][0], points[0][2], points[1][1], points[1][3]))
+            intersects.append(get_intersect(points[0][1], points[0][3], points[1][0], points[1][2]))
+               
+            stack = np.vstack((points[0][3], intersects[1], points[1][2], 
+                               points[1][3], intersects[0], points[0][2]))
+            
+            polygon = Polygon(stack, True, facecolor=color, alpha=1)         
+            p = PatchCollection([polygon], match_original=True)
+            ax.add_collection(p) 
+            
+            
+            
+                      
+            
+        if G.degree(node) == 3:
+            
+            edges = get_edges(G, node)
+            
+            points = []
+            for edge in edges:
+                points.append(get_points(edge))                        
+            
+            intersects = []        
+            intersects.append(get_intersect(points[0][1], points[0][3], points[1][0], points[1][2]))
+            intersects.append(get_intersect(points[1][1], points[1][3], points[2][0], points[2][2]))
+            intersects.append(get_intersect(points[0][0], points[0][2], points[2][1], points[2][3]))
+            
+            stack = np.vstack((points[0][3], intersects[0], points[1][2], 
+                               points[1][3], intersects[1], points[2][2],
+                               points[2][3], intersects[2], points[0][2]))
+
+            
+            
+            polygon = Polygon(stack, True, facecolor=color, alpha=1)
+            p = PatchCollection([polygon], match_original=True)
+            ax.add_collection(p)   
+        
+        
+        
+        if G.degree(node) == 4:
+            edges = get_edges(G, node)
+                        
+            points = []
+            for edge in edges:
+                points.append(get_points(edge))                        
+            
+            intersects = []        
+            intersects.append(get_intersect(points[0][1], points[0][3], points[1][0], points[1][2]))
+            intersects.append(get_intersect(points[1][1], points[1][3], points[2][0], points[2][2]))
+            intersects.append(get_intersect(points[2][1], points[2][3], points[3][0], points[3][2]))
+            intersects.append(get_intersect(points[0][0], points[0][2], points[3][1], points[3][3]))
+            
+            
+            stack = np.vstack((points[0][3], intersects[0], points[1][2], 
+                               points[1][3], intersects[1], points[2][2],
+                               points[2][3], intersects[2], points[3][2],
+                               points[3][3], intersects[3], points[0][2]))
+
+
+            polygon = Polygon(stack, True, facecolor=color, alpha=1)
+            p = PatchCollection([polygon], match_original=True)
+            ax.add_collection(p)   
+            
+            
+            
+            
+        if G.degree(node) == 5:
+            edges = get_edges(G, node)
+                        
+            points = []
+            for edge in edges:
+                points.append(get_points(edge))                        
+            
+            intersects = []        
+            intersects.append(get_intersect(points[0][1], points[0][3], points[1][0], points[1][2]))
+            intersects.append(get_intersect(points[1][1], points[1][3], points[2][0], points[2][2]))
+            intersects.append(get_intersect(points[2][1], points[2][3], points[3][0], points[3][2]))
+            intersects.append(get_intersect(points[3][1], points[3][3], points[4][0], points[4][2]))
+            intersects.append(get_intersect(points[0][0], points[0][2], points[4][1], points[4][3]))
+            
+            
+            stack = np.vstack((points[0][3], intersects[0], points[1][2], 
+                               points[1][3], intersects[1], points[2][2],
+                               points[2][3], intersects[2], points[3][2],
+                               points[3][3], intersects[3], points[4][2],
+                               points[4][3], intersects[4], points[0][2]))
+
+
+            polygon = Polygon(stack, True, facecolor=color, alpha=1)
+            p = PatchCollection([polygon], match_original=True)
+            ax.add_collection(p)             
+    
+    
+    
+    ax.axis('equal')
+    plt.show()
+    
+
+
