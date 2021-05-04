@@ -583,7 +583,7 @@ def stack_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
     
      
             
-    ax.stackplot(x, y, fc=colors[:max_fault,:], alpha=0.75, edgecolor='white', linewidth=0.5)
+    ax.stackplot(x, y, facecolor=colors[:max_fault,:], alpha=0.75, edgecolor='white', linewidth=0.5)
     
     if title!=[]:
         ax.set_title(title)    
