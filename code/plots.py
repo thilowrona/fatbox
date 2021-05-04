@@ -517,8 +517,7 @@ def plot_location(log, name, ax=[], title=[]):
 
 
 
-
-def bar_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):    
+def bar_plot(attribute, faults, times, steps=[], ax=[]):
 
     colors = get_colors() 
         
@@ -526,8 +525,7 @@ def bar_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
         fig, ax = plt.subplots()  
 
     if steps==[]:
-        steps = range(attribute.shape[1])    
-    
+        steps = range(attribute.shape[1])
     
     for n, step in enumerate(steps):
         bottom = 0
@@ -538,15 +536,6 @@ def bar_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
                 bottom += a
             else:
                 break
-    
-    if title!=[]:
-        ax.set_title(title)
-        
-    ax.set_ylabel(name)
-    
-
-    ax.set_xlabel('Time')
-    ax.set_ylabel(name)
 
 
 
