@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.patches as patches
 from matplotlib.colors import LinearSegmentedColormap
+
+from matplotlib.patches import Polygon
+from matplotlib.collections import PatchCollection
+
 from PIL import Image
 
 import seaborn as sns
