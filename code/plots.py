@@ -541,7 +541,7 @@ def bar_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
     ax.set_ylabel(name)
     
 
-    ax.set_xlabel('Time [10^6 yrs]')
+    ax.set_xlabel('Time')
     ax.set_ylabel(name)
 
 
@@ -588,7 +588,7 @@ def stack_plot(attribute, faults, times, name, steps=[], ax=[], title=[]):
     if title!=[]:
         ax.set_title(title)    
 
-    ax.set_xlabel('Time [10^6 yrs]')
+    ax.set_xlabel('Time')
     ax.set_ylabel(name)
     
     
