@@ -1,14 +1,13 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% '
+import math
+import pickle
+
 import faultanalysistoolbox.metrics as fatb_metrics
 import faultanalysistoolbox.plots as fatb_plots
-
 import matplotlib.pyplot as plt
-import pickle
 import networkx as nx
 import numpy as np
-import math
-
 
 # %%
 # ## Load fault network

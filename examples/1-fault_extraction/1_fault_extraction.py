@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 """ Does the same as the Jupyter notebook but as a normal python script """
-
-import pickle
-from sys import stdout
-
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
