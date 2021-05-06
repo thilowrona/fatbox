@@ -1,5 +1,3 @@
-import glob
-import math
 from itertools import count
 
 import networkx as nx
@@ -27,7 +25,7 @@ def get_times(filename):
     with open(filename) as f:
         header = f.readlines()
     # remove all lines that do not start with "#" (starting from the back)
-    nonheaderID = [x[0] != '#' for x in header]
+    # nonheaderID = [x[0] != '#' for x in header]
     for index, linecontent in reversed(list(enumerate(header))):
         if linecontent[0] != '#':
             del header[index]
@@ -205,7 +203,7 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
     # if scalar3:
     #     polydata.GetPointData().AddArray(attribute3)
     if nodeLabel:
-        polydata.GetPointData().AddArray(label)
+        polydata.GetPointData().AddArray(label)  # label is undefined
     writer = vtk.vtkXMLPolyDataWriter()
     writer.SetFileName(fileout+'.vtp')
     writer.SetInputData(polydata)

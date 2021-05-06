@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-import copy
 import math
 import random
-import sys
 
 import networkx as nx
 import numpy as np

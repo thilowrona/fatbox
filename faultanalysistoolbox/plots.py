@@ -1,8 +1,5 @@
-import sys
+import math
 
-import matplotlib as mpl
-import matplotlib.cm as cm
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -13,6 +10,8 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from PIL import Image
+
+from . import edits, metrics, utils
 
 cmap = colors.ListedColormap(
     [
@@ -96,7 +95,9 @@ def plot_components(
 
     if crop:
 
-        (x_min, x_max), (z_min, z_max) = calculate_crop(G, edge=edge)
+        (x_min, x_max), (z_min, z_max) = metrics.calculate_crop(
+            G, edge=edge  # edge is undefined!!
+        )
 
         for node in G:
             G.nodes[node]['pos'] = (
@@ -111,7 +112,7 @@ def plot_components(
             node_size=node_size,
             ax=ax)
 
-    limits = ax.axis('on')  # turns on axis
+    ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
     if label is True:
@@ -176,7 +177,7 @@ def plot_faults(
             ax.text(y_avg, x_avg, label, fontsize=15,
                     color=palette[G.nodes[n]['fault']])
 
-    limits = ax.axis('equal')  # turns on axis
+    ax.axis('equal')  # turns on axis
     ax.axis('on')
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
@@ -192,13 +193,15 @@ def plot_attribute(
         fig, ax = plt.subplots()
 
     if vmin == []:
-        vmin = min_value_nodes(G, attribute)
+        vmin = metrics.min_value_nodes(G, attribute)
 
     if vmax == []:
-        vmax = max_value_nodes(G, attribute)
+        vmax = metrics.max_value_nodes(G, attribute)
 
     if crop:
-        (x_min, x_max), (z_min, z_max) = calculate_crop(G, edge=edge)
+        (x_min, x_max), (z_min, z_max) = metrics.calculate_crop(
+            G, edge=edge  # edge is undefined!
+        )
         for node in G:
             G.nodes[node]['pos'] = (
                 G.nodes[node]['pos'][0]-x_min, G.nodes[node]['pos'][1]-z_min)
@@ -216,7 +219,7 @@ def plot_attribute(
             vmax=vmax,
             cmap=cmap)
 
-    limits = ax.axis('on')  # turns on axis
+    ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
     sm = plt.cm.ScalarMappable(
@@ -250,8 +253,8 @@ def plot_edge_attribute(G, attribute, ax=[]):
 
     # Colorbar
     cmap = plt.cm.twilight_shifted
-    vmax = max_value_edges(G, attribute)
-    vmin = min_value_edges(G, attribute)
+    vmax = metrics.max_value_edges(G, attribute)
+    vmin = metrics.min_value_edges(G, attribute)
 
     sm = plt.cm.ScalarMappable(
         cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
@@ -345,11 +348,15 @@ def plot_matrix(matrix, rows, columns, threshold):
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
             if matrix[i, j] < threshold:
-                text = ax.text(j, i, round(matrix[i, j], 3),
-                               ha="center", va="center", color="r")
+                ax.text(
+                    j, i, round(matrix[i, j], 3),
+                    ha="center", va="center", color="r"
+                )
             else:
-                text = ax.text(j, i, round(matrix[i, j], 3),
-                               ha="center", va="center", color="k")
+                ax.text(
+                    j, i, round(matrix[i, j], 3),
+                    ha="center", va="center", color="k"
+                )
 
 
 def plot_compare_graphs(G, H):
@@ -386,7 +393,7 @@ def plot_threshold(data, threshold, value, filename=False):
 def plot_connections(matrix, rows, columns):
     for n in range(100):
         threshold = n/100
-        connections = similarity_to_connection(
+        connections = edits.similarity_to_connection(
             matrix, rows, columns, threshold)
         plt.scatter(threshold, len(connections), c='red')
         plt.xlabel('Threshold')
@@ -395,7 +402,7 @@ def plot_connections(matrix, rows, columns):
 
 def plot_location(log, name, ax=[], title=[]):
 
-    colors = get_colors()
+    colors = utils.get_colors()
 
     cm = LinearSegmentedColormap.from_list(
         'something', colors, N=colors.shape[0])
@@ -410,7 +417,7 @@ def plot_location(log, name, ax=[], title=[]):
 
 def bar_plot(attribute, faults, times, steps=[], ax=[]):
 
-    colors = get_colors()
+    colors = utils.get_colors()
 
     if ax == []:
         fig, ax = plt.subplots()
@@ -432,7 +439,7 @@ def bar_plot(attribute, faults, times, steps=[], ax=[]):
 
 def stack_plot(attribute, faults, times, steps=[], ax=[]):
 
-    colors = get_colors()
+    colors = utils.get_colors()
 
     if ax == []:
         fig, ax = plt.subplots()
@@ -462,7 +469,7 @@ def plot_width(G, ax, width, tips=True, plot=False):
 
     n_comp = 10000
 
-    palette = sns.color_palette(None, 2*n_comp)
+    sns.color_palette(None, 2*n_comp)
 
     colors = get_node_colors(G, 'fault')
 
