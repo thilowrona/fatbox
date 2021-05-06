@@ -11,11 +11,8 @@ from tqdm import tqdm
 
 # %%
 # ## Fault extraction
-
-
-
-# %%
-# First, we load our data - a strain rate map extracted just below the surface of the model:
+# First, we load our data - a strain rate map extracted just below the surface
+# of the model:
 path = '/home/mrudolf/Nextcloud/GitRepos/fault_analysis_toolbox/examples/1-fault_extraction/NearSurfaceIsotherm_335K_strain_rate.npy'
 strain_rate = np.load(
     path
@@ -42,7 +39,8 @@ plt.axis('off')
 plt.show(block=False)
 
 # %%
-# Now we can reduce the areas above the threshold to lines using a skeletonize algorithm:
+# Now we can reduce the areas above the threshold to lines using a skeletonize
+# algorithm:
 
 skeleton = guo_hall(threshold)
 
@@ -67,7 +65,8 @@ for node, point in enumerate(points):
     G.nodes[node]['pos'] = point
 
 # %%
-# Remember a graph is an object consisting only of nodes and edges. Our graph for example looks like this:
+# Remember a graph is an object consisting only of nodes and edges. Our graph
+# for example looks like this:
 
 fig, axs = plt.subplots(1, 2)
 
@@ -90,10 +89,12 @@ axs[1].set_ylim([500, 600])
 plt.show(block=False)
 
 # %%
-# You can see that the graph only consists of closely spaced points, which are not yet connected. So let's change that!
+# You can see that the graph only consists of closely spaced points, which are
+# not yet connected. So let's change that!
 #
 #
-# We calculate the distance between all nodes in a distance matrix and connect the ones close to each other (<1.5 pixels away):
+# We calculate the distance between all nodes in a distance matrix and connect
+# the ones close to each other (<1.5 pixels away):
 
 dm = distance_matrix(points, points)
 
@@ -127,7 +128,8 @@ axs[1].set_ylim([500, 600])
 plt.show(block=False)
 
 # %%
-# Now we can see that neighboring nodes are connected by edges (black lines). This allows us to label the nodes connected to one another as components:
+# Now we can see that neighboring nodes are connected by edges (black lines).
+# This allows us to label the nodes connected to one another as components:
 
 G = label_components(G)
 
@@ -138,7 +140,8 @@ plt.title('Strain rate with fault network')
 plt.show(block=False)
 
 # %%
-# When we zoom in, we can see the nodes colored by their component and the edges connecting them:
+# When we zoom in, we can see the nodes colored by their component and the
+# edges connecting them:
 
 fig, axs = plt.subplots(1, 1)
 axs.imshow(strain_rate, 'gray_r', vmin=0)
@@ -150,7 +153,8 @@ plt.show(block=False)
 
 # %%
 # ## Structure of the network
-# Let's have a look at the structure of the fault network (or graph). Remember it only consists of nodes and edges. So let's have a look at the nodes:
+# Let's have a look at the structure of the fault network (or graph). Remember
+# it only consists of nodes and edges. So let's have a look at the nodes:
 
 print(G.nodes)
 
@@ -160,7 +164,9 @@ print(G.nodes)
 print(G.nodes[0])
 
 # %%
-# Alright, we can see the position of the node and the component it belongs to. Let's say we want to give it an extra property, e.g. the strain rate at its location:
+# Alright, we can see the position of the node and the component it belongs to.
+# Let's say we want to give it an extra property, e.g. the strain rate at its
+# location:
 
 G.nodes[0]['strain_rate'] = strain_rate[
     int(G.nodes[0]['pos'][1]),
@@ -193,7 +199,8 @@ ax.axis('equal')
 plt.show(block=False)
 
 # %%
-# Like this we can compute and visualize all kinds of properties on the fault network.
+# Like this we can compute and visualize all kinds of properties on the fault
+# network.
 #
 # But what about the edges?
 
@@ -236,5 +243,7 @@ ax.axis('equal')
 plt.show()
 
 # %%
-# Awesome! That's it. You've extracted your first fault network. In the next tutorial, we will learn how to compute and visualize fault strikes:
+# Awesome! That's it. You've extracted your first fault network. In the next
+# tutorial, we will learn how to compute and visualize fault strikes:
 # https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-fault_properties/2-fault_properties.ipynb
+#
