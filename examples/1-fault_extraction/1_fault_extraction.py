@@ -13,19 +13,19 @@ from faultanalysistoolbox.plots import plot_components
 from scipy.spatial import distance_matrix
 from tqdm import tqdm
 
-# %% [markdown]
+# %%
 # ## Fault extraction
 
 
 
-# %% [markdown]
+# %%
 # First, we load our data - a strain rate map extracted just below the surface of the model:
 path = '/home/mrudolf/Nextcloud/GitRepos/fault_analysis_toolbox/examples/1-fault_extraction/NearSurfaceIsotherm_335K_strain_rate.npy'
 strain_rate = np.load(
     path
 )
 
-# %% [markdown]
+# %%
 # Now we can plot it to look the faults in the model
 
 plt.figure()
@@ -34,7 +34,7 @@ plt.imshow(strain_rate, vmin=0)
 plt.colorbar()
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # Next we want to separate the faults from the background using a threshold:
 
 threshold = np.where(strain_rate > 1.5e-14, 1, 0).astype(np.uint8)
@@ -45,7 +45,7 @@ plt.imshow(threshold)
 plt.axis('off')
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # Now we can reduce the areas above the threshold to lines using a skeletonize algorithm:
 
 skeleton = guo_hall(threshold)
@@ -56,12 +56,12 @@ plt.imshow(skeleton)
 plt.axis('off')
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # Now we can convert these lines to points:
 
 points = array_to_points(skeleton)
 
-# %% [markdown]
+# %%
 # These points become the nodes of our graph G:
 
 G = nx.Graph()
@@ -70,7 +70,7 @@ for node, point in enumerate(points):
     G.add_node(node)
     G.nodes[node]['pos'] = point
 
-# %% [markdown]
+# %%
 # Remember a graph is an object consisting only of nodes and edges. Our graph for example looks like this:
 
 fig, axs = plt.subplots(1, 2)
@@ -93,7 +93,7 @@ axs[1].set_ylim([500, 600])
 
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # You can see that the graph only consists of closely spaced points, which are not yet connected. So let's change that!
 #
 #
@@ -130,7 +130,7 @@ axs[1].set_ylim([500, 600])
 
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # Now we can see that neighboring nodes are connected by edges (black lines). This allows us to label the nodes connected to one another as components:
 
 G = label_components(G)
@@ -141,7 +141,7 @@ plot_components(G, axs, label=True)
 plt.title('Strain rate with fault network')
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # When we zoom in, we can see the nodes colored by their component and the edges connecting them:
 
 fig, axs = plt.subplots(1, 1)
@@ -152,18 +152,18 @@ axs.set_ylim([400, 600])
 plt.title('Strain rate with fault network')
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # ## Structure of the network
 # Let's have a look at the structure of the fault network (or graph). Remember it only consists of nodes and edges. So let's have a look at the nodes:
 
 print(G.nodes)
 
-# %% [markdown]
+# %%
 # Okay, nothing special here, just a list of the nodes. Let's pick out one:
 
 print(G.nodes[0])
 
-# %% [markdown]
+# %%
 # Alright, we can see the position of the node and the component it belongs to. Let's say we want to give it an extra property, e.g. the strain rate at its location:
 
 G.nodes[0]['strain_rate'] = strain_rate[
@@ -172,7 +172,7 @@ G.nodes[0]['strain_rate'] = strain_rate[
 ]
 print(G.nodes[0])
 
-# %% [markdown]
+# %%
 # Nice! Let's do that for all nodes:
 
 for node in G.nodes:
@@ -181,7 +181,7 @@ for node in G.nodes:
         int(G.nodes[node]['pos'][0])
     ]
 
-# %% [markdown]
+# %%
 # and plot it:
 
 fig, ax = plt.subplots()
@@ -196,19 +196,19 @@ nx.draw(G,
 ax.axis('equal')
 plt.show(block=False)
 
-# %% [markdown]
+# %%
 # Like this we can compute and visualize all kinds of properties on the fault network.
 #
 # But what about the edges?
 
 print(G.edges)
 
-# %% [markdown]
+# %%
 # Alright, just tuples of nodes. Let's pick one:
 
 print(G.edges[(0, 5)])
 
-# %% [markdown]
+# %%
 # Okay, they have no property yet. Let's calculate its length:
 
 edge = (0, 5)
@@ -218,14 +218,14 @@ G.edges[edge]['length'] = np.linalg.norm(
 
 print(G.edges[(0, 5)])
 
-# %% [markdown]
+# %%
 # Again, we can do this for all edges:
 
 for edge in G.edges:
     G.edges[edge]['length'] = np.linalg.norm(
         G.nodes[edge[0]]['pos']-G.nodes[edge[1]]['pos'])
 
-# %% [markdown]
+# %%
 # and plot it:
 
 fig, ax = plt.subplots()
@@ -239,6 +239,6 @@ nx.draw(G,
 ax.axis('equal')
 plt.show()
 
-# %% [markdown]
+# %%
 # Awesome! That's it. You've extracted your first fault network. In the next tutorial, we will learn how to compute and visualize fault strikes:
 # https://github.com/thilowrona/fault_analysis_toolbox/blob/master/examples/2-fault_properties/2-fault_properties.ipynb
