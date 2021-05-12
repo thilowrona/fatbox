@@ -1,0 +1,10 @@
+numpy
+scipy
+pandas
+matplotlib
+meshio
+networkx
+Pillow
+seaborn
+vtk
+cv_algorithms@git+https://github.com/ulikoehler/cv_algorithms.git
