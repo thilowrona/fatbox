@@ -420,14 +420,14 @@ def mean_value_edges(G, attribute):
 def average_x(G):
     values = np.zeros((len(G.nodes)))
     for n, node in enumerate(G):
-        values[n] = G.nodes[node]['pos'][1]
+        values[n] = G.nodes[node]['pos'][0]
     return np.average(values)
 
 
 def average_y(G):
     values = np.zeros((len(G.nodes)))
     for n, node in enumerate(G):
-        values[n] = G.nodes[node]['pos'][0]
+        values[n] = G.nodes[node]['pos'][1]
     return np.average(values)
 
 
