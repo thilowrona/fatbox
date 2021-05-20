@@ -5,10 +5,31 @@ import numpy as np
 
 
 # THRESHOLDING
-def simple_threshold_binary(arr, value):
-    threshold = np.where(arr > value, 1, 0)
-    threshold = np.uint8(threshold)
-    return threshold
+
+def simple_threshold_binary(arr, threshold):
+    """ Thresholds array into a binary array
+    
+    Parameters
+    ----------
+    
+    threshold : int, float
+        The threshold used to binarize the input array
+    
+    Returns
+    -------  
+    array
+        Binarized output array (type: uint8)
+    """
+    
+    # Assertions
+    assert isinstance(arr,np.ndarray), "Input is not a NumPy array"
+    assert isinstance(threshold, int) or isinstance(threshold, float), "Threshold is neither int nor float"
+    
+    # Calculation
+    arr = np.where(arr > threshold, 1, 0)
+    arr = np.uint8(arr)    
+    
+    return arr
 
 
 def simple_threshold_truevalue(arr, value):
