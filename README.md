@@ -13,7 +13,7 @@ If you wanna get started, we highly recommend checking out some of the [tutorial
 ## Your own machine
 You can also use the fault analysis toolbox on your own machine. All you need is a Python 3 enviromnent, then you can install the toolbox:
 ```
-!pip3 install git+https://github.com/thilowrona/fatbox.git
+pip3 install git+https://github.com/thilowrona/fatbox.git
 ```
 Now you can load any function from the toolbox in Python:
 ```
@@ -22,7 +22,7 @@ from fatbox.plots import plot_attribute
 You can also clone the companion git repository containing the tutorials:
 
 ``` 
-!git clone https://github.com/thilowrona/fatbox_tutorials
+git clone https://github.com/thilowrona/fatbox_tutorials
 ```
 
 
