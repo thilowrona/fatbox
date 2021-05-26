@@ -1,120 +1,420 @@
+# Packages
 import math
-
 import networkx as nx
 import numpy as np
 
 
-# EDGES
+
+#==============================================================================
+# This file contains a series of function to compute metrics of the fault 
+# network (graph). This includes functions for: 
+# (1) nodes
+# (2) edges
+# (3) components (i.e. connected nodes)
+# (4) faults (i.e. one or more components)
+# (5) the whole network 
+#==============================================================================
+
+
+
+#******************************************************************************
+# (1) NODE METRICS
+# A couple of functions to calculate node attributes
+#******************************************************************************
+
+def compute_node_values(G, attribute, mode):
+    """ Calculate common node value, e.g. min, max, mean
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+    attribute : string
+        Node attribute used for calculation
+    mode: string
+        Type of value that's calculated. Options: min, max, mean, range, sum'
+        
+    Returns
+    -------  
+    value
+        Float
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert (mode in ['min', 'max', 'mean', 'range', 'sum']), 'Node 0 is not in G'    
+
+    # Get values
+    values = np.array([G.nodes[node][attribute] for node in G])
+    
+    # Compute value
+    if mode == 'min':
+        return np.min(values)
+    
+    elif mode == 'max':
+        return np.max(values)
+    
+    elif mode == 'mean':
+        return np.mean(values)
+    
+    elif mode == 'range':
+        return np.max(values)-np.min(values)
+
+    elif mode == 'sum':
+        return np.sum(values)
+
+
+
+
+def get_limits_xy(G):
+    """ Calculate limits (x,y) of graph
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    Returns
+    -------  
+    x_min
+        Float
+    x_max
+        Float
+    y_min
+        Float
+    y_max
+        Float
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    
+    # Calculation
+    x_min = compute_node_values(G, 'x', 'min')
+    x_max = compute_node_values(G, 'x', 'max')
+    y_min = compute_node_values(G, 'y', 'min')
+    y_max = compute_node_values(G, 'y', 'max')
+    
+    return x_min, x_max, y_min, y_max
+
+
+
+
+def distance_between_nodes(G, n0, n1, mode='pos'):
+    """ Calculate distance (euclidean) between nodes
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+    n0 : node 0
+    n1 : node 1
+    mode : Coordinates used to calculate distance (Default: 'pos', others: 'xy')
+    
+    Returns
+    -------  
+    distance
+        Float
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+    assert (n0 in G.nodes), 'Node 0 is not in G'
+    assert (n1 in G.nodes), 'Node 1 is not in G'
+    assert mode == 'pos' or mode == 'xy', "Invalid mode! Mode is neither 'pos' nor 'xy'"
+    
+    # Get coordinates
+    if mode == 'pos':
+        y0, x0   = G.nodes[n0]['pos']
+        y1, x1   = G.nodes[n1]['pos']
+        
+        
+    if mode == 'xy':
+        x0 = G.nodes[n0]['x']
+        y0 = G.nodes[n0]['y']
+        x1 = G.nodes[n1]['x']
+        y1 = G.nodes[n1]['y']       
+        
+    # Return euclidean distance        
+    return math.sqrt((x0 - x1)**2 + (y0 - y1)**2)
+
+
+
+
+
+
+
+
+
+#******************************************************************************
+# (2) EDGE METRICS
+# A couple of functions to calculate edge attributes
+#******************************************************************************
+
 def count_edges(G):
+    """ Count the number of edges for each node
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+        
+    # Calculation
     for node in G:
         G.nodes[node]['edges'] = len(G.edges(node))
+        
     return G
 
 
-def compute_strikes(G):
-    for n, edge in enumerate(G.edges):
 
-        n0 = edge[1]
-        n1 = edge[0]
+def compute_edge_length(G):
+    """ Count the length of each edge
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph with 'length' edge attribute
+    """  
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+        
+    # Calculation   
+    for edge in G.edges:
+        G.edges[edge]['length'] = distance_between_nodes(G, edge[0], edge[1])
+        
+    return G
 
-        G.edges[edge]['strike'] = strike_between_nodes_pix(G, n0, n1)
+
+
+def compute_edge_values(G, attribute, mode):
+    """ Calculate common edge value, e.g. min, max, mean
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    attribute : string
+        Node attribute used for calculation
+    mode: string
+        Type of value that's calculated. Options: min, max, mean, range, sum'
+        
+    Returns
+    -------  
+    value
+        Float
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert (mode in ['min', 'max', 'mean', 'range', 'sum']), 'Node 0 is not in G'    
+
+    # Get values
+    values = np.array([G.edges[edge][attribute] for edge in G.edges])
+    
+    # Compute value
+    if mode == 'min':
+        return np.min(values)
+    
+    elif mode == 'max':
+        return np.max(values)
+    
+    elif mode == 'mean':
+        return np.mean(values)
+    
+    elif mode == 'range':
+        return np.max(values)-np.min(values)
+
+    elif mode == 'sum':
+        return np.sum(values)
+
+
+
+def compute_strikes(G, mode='xy'):
+    """ Compute strikes of edges
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    mode: string
+        Type of value that's calculated. Default: 'xy', Options: 'pos'
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph containing edges with 'strike' attribute
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert (mode in ['xy', 'pos']), "Mode is neither 'xy' nor 'pos'"    
+    
+    # Calculation
+    if mode == 'pos':
+        for edge in G.edges:
+            # Get coordinates
+            x0 = G.nodes[edge[0]]['pos'][0]
+            x1 = G.nodes[edge[1]]['pos'][0]
+            y0 = G.nodes[edge[0]]['pos'][1]
+            y1 = G.nodes[edge[1]]['pos'][1]
+             
+            # Calculate
+            if (x1-x0)<0:
+              strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
+            else:
+              strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
+            
+            #Scale to [0, 180]
+            if strike<=180:
+              G.edges[edge]['strike'] = strike
+            else:
+              G.edges[edge]['strike'] = strike - 180
+
+
+
+    if mode == 'xy':
+        for edge in G.edges:
+            # Get coordinates
+            x0 = G.nodes[edge[0]]['x']
+            x1 = G.nodes[edge[1]]['x']
+            y0 = G.nodes[edge[0]]['y']
+            y1 = G.nodes[edge[1]]['y']
+            
+            # Calculate
+            if (x1-x0)<0:
+              strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
+            else:
+              strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
+            
+            #Scale to [0, 180]
+            if strike<=180:
+              G.edges[edge]['strike'] = strike
+            else:
+              G.edges[edge]['strike'] = strike - 180
 
     return G
 
 
-def compute_xy(G, scale_factor):
-    for node in G:
-        G.nodes[node]['x'] = G.nodes[node]['pos'][0]*scale_factor
-        G.nodes[node]['y'] = G.nodes[node]['pos'][1]*scale_factor
+
+
+
+
+def dip(x0, z0, x1, z1):
+    """ Compute dip between two points: (x0, z0) (x1, z1)
+    
+    Parameters
+    ----------
+    x0 : float
+        X-coordinate of point 0
+    x1 : float
+        X-coordinate of point 1
+    z0 : float
+        Z-coordinate of point 0
+    z1 : float
+        Z-coordinate of point 1
+        
+    Returns
+    -------  
+    value : float
+        Dip between points
+    """
+
+    # Assertions
+
+    
+    # Calculation
+    if (x0 - x1) == 0:
+        value = 90
+    else:
+        value = math.degrees(math.atan((z0 - z1)/(x0 - x1)))
+        if value == -0:
+            value = 0
+
+    return value
+
+
+
+
+def calculate_dip(G, to_nodes=False):
+    """ Compute dip of fault network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    mode: string
+        Type of value that's calculated. Default: 'xy', Options: 'pos'
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph containing edges with 'strike' attribute
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    # Calculation
+    for edge in G.edges():
+        G.edges[edge]['dip'] = dip(G.nodes[edge[0]]['x'], G.nodes[edge[0]]['z'],
+                                   G.nodes[edge[1]]['x'], G.nodes[edge[1]]['z'])
+
+    # Write to nodes (if activated)
+    if to_nodes:
+        for node in G.nodes():
+            lst = []
+            for edge in G.edges(node):
+                lst.append(G.edges[edge]['dip'])
+            G.nodes[node]['dip'] = sum(lst) / len(lst)
+
     return G
 
 
-def distance_between_nodes_pix(G, n0, n1):
-    """ Strike in radius calculation """
-    y0, x0 = G.nodes[n0]['pos']
-    y1, x1 = G.nodes[n1]['pos']
-    return math.sqrt((x0 - x1)**2 + (y0 - y1)**2)
 
 
-def distance_between_nodes(G, n0, n1):
-    x0 = G.nodes[n0]['x']
-    y0 = G.nodes[n0]['y']
-    x1 = G.nodes[n1]['x']
-    y1 = G.nodes[n1]['y']
-    return math.sqrt((x0 - x1)**2 + (y0 - y1)**2)
+
+
+
+
+
+
+
 
 
 def strike_between_nodes(G, n0, n1):
-    x0 = G.nodes[n0]['x']
-    y0 = G.nodes[n0]['y']
-    x1 = G.nodes[n1]['x']
-    y1 = G.nodes[n1]['y']
-
-    if (x0 - x1) < 0:
-        if (y0 - y1) < 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1)))
-        elif (y0 - y1) > 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1))) + 180
-        else:
-            strike = 90
-
-    if (x0 - x1) > 0:
-        if (y0 - y1) > 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1)))
-        elif (y0 - y1) < 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1))) + 180
-        else:
-            strike = 90
-
-    if (x0 - x1) == 0:
-        if (y0 - y1) < 0:
-            strike = 0
-        elif (y0 - y1) > 0:
-            strike = 180
-
-    return strike
-
-
-def strike_between_nodes_pix(G, n0, n1):
     x0 = G.nodes[n0]['pos'][0]
-    y0 = G.nodes[n0]['pos'][1]
     x1 = G.nodes[n1]['pos'][0]
+    y0 = G.nodes[n0]['pos'][1]
     y1 = G.nodes[n1]['pos'][1]
-
-    if (x0 - x1) < 0:
-        if (y0 - y1) < 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1)))
-        elif (y0 - y1) > 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1))) + 180
-        else:
-            strike = 90
-
-    if (x0 - x1) > 0:
-        if (y0 - y1) > 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1)))
-        elif (y0 - y1) < 0:
-            strike = math.degrees(math.atan((x0 - x1)/(y0 - y1))) + 180
-        else:
-            strike = 90
-
-    if (x0 - x1) == 0:
-        if (y0 - y1) < 0:
-            strike = 0
-        elif (y0 - y1) > 0:
-            strike = 180
-        else:
-            strike = 0
-
-    return strike
+    
+    if (x1-x0)<0:
+      strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
+    else:
+      strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
+    
+    #Scale to [0, 180]
+    if strike<=180:
+      return strike
+    else:
+      return strike - 180
 
 
-def strike_between_nodes_xz(G, n0, n1):
-    x0 = G.nodes[n0]['x']
-    y0 = G.nodes[n0]['z']
-    x1 = G.nodes[n1]['x']
-    y1 = G.nodes[n1]['z']
 
-    return math.degrees(math.atan((x0 - x1)/(y0 - y1)))
 
 
 def nodes_of_max_dist(G, nodes):
@@ -125,11 +425,14 @@ def nodes_of_max_dist(G, nodes):
     threshold = 0
     for n0 in nodes:
         for n1 in nodes:
-            d = distance_between_nodes_pix(G, n0, n1)
+            d = distance_between_nodes(G, n0, n1)
             if d > threshold:
                 threshold = d
                 pair = (n0, n1)
     return pair
+
+
+
 
 
 def calculate_strikes_in_radius(G, radius=10):
@@ -138,7 +441,7 @@ def calculate_strikes_in_radius(G, radius=10):
         G.nodes[node]['strike'] = float("nan")
         nodes_within_radius = []
         for other in G:
-            if distance_between_nodes_pix(G, node, other) < radius:
+            if distance_between_nodes(G, node, other) < radius:
                 nodes_within_radius.append(other)
 
         if len(nodes_within_radius) > 0:
@@ -182,51 +485,133 @@ def calculate_strikes_in_neighborhood(G, neighbors=3):
     return G
 
 
-# EDGES
-def max_value_edges(G, attribute):
-    values = np.zeros((len(G.edges)))
-    for n, edge in enumerate(G.edges()):
-        values[n] = G.edges[edge][attribute]
-    return np.max(values)
 
 
-def min_value_edges(G, attribute):
-    values = np.zeros((len(G.edges)))
-    for n, edge in enumerate(G.edges()):
-        values[n] = G.edges[edge][attribute]
-    return np.min(values)
 
 
-def compute_edge_length(G):
-    for edge in G.edges:
-        G.edges[edge]['length'] = distance_between_nodes_pix(
-            G, edge[0], edge[1]
-        )
-    return G
 
 
-def total_length(G):
-    G = compute_edge_length(G)
-    length = 0
-    for edge in G.edges:
-        length = length + G.edges[edge]['length']
-    return length
 
 
-def select_components(G, components):
-    H = G.copy()
-    if type(components) != list:
-        selected_nodes = [
-            n[0] for n in H.nodes(data=True)
-            if n[1]['component'] == components
-        ]
-    else:
-        selected_nodes = [
-            n[0] for n in H.nodes(data=True)
-            if n[1]['component'] in components
-        ]
-    H = H.subgraph(selected_nodes)
-    return H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#******************************************************************************
+# (2) COMPONENT METRICS
+# A couple of functions to calculate attributes of components
+#******************************************************************************
+
+def get_component_labels(G):
+    """ Get component labels of graph G
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    list: int
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+    
+    return sorted([G.nodes[next(iter(cc))]['component'] for cc in nx.connected_components(G)])
+
+
+
+def number_of_components(G):
+    """ Count the number of components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    value: int
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+    
+    return len(nx.connected_components(G))
+
+
+
+def compute_component_node_values(G, attribute, mode):
+    """ Calculate common comonent value, e.g. min, max, mean
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+    attribute : string
+        Node attribute used for calculation
+    mode: string
+        Type of value that's calculated. Options: min, max, mean, range, sum'
+        
+    Returns
+    -------  
+    array
+        Float
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'     
+    assert (mode in ['min', 'max', 'mean', 'range', 'sum']), 'Node 0 is not in G'    
+
+    # Calculation
+    components = sorted(nx.connected_components(G))
+    values = np.zeros((len(components)))
+    
+    # Loop through components
+    for m, cc in enumerate(components):
+        node_values = np.zeros((len(cc)))
+        for n, node in enumerate(cc):
+            node_values[n] = G.nodes[node][attribute]
+                          
+            
+        # Compute fault values
+        if mode == 'min':
+            values[n] = np.min(node_values)
+        
+        elif mode == 'max':
+            values[n] = np.max(node_values)
+        
+        elif mode == 'mean':
+            values[n] = np.mean(node_values)
+        
+        elif mode == 'range':
+            values[n] = np.max(node_values)-np.min(node_values)
+    
+        elif mode == 'sum':
+            values[n] = np.sum(node_values)         
+            
+    return values
+
+
+
+
+
+
+
+
+
+
 
 
 def component_lengths(G):
@@ -241,108 +626,220 @@ def component_lengths(G):
     return values
 
 
-def fault_lengths(G):
-
-    faults = return_faults(G)
-
-    lengths = np.zeros(len(faults))
-
-    for n, fault in enumerate(faults):
-        nodes = [
-            node for node in G
-            if G.nodes[node] == fault
-        ]
-        G_sub = G.subgraph(nodes)
-        lengths[n] = total_length(G_sub)
-    return lengths
 
 
-def dip(x0, z0, x1, z1):
-    if (x0 - x1) == 0:
-        value = 90
-    else:
-        value = math.degrees(math.atan((z0 - z1)/(x0 - x1)))
-        if value == -0:
-            value = 0
-
-    return value
 
 
-def edge_dip(G):
-    for edge in G.edges():
-        G.edges[edge]['dip'] = dip(
-            G.nodes[edge[0]]['x'], G.nodes[edge[0]]['z'],
-            G.nodes[edge[1]]['x'], G.nodes[edge[1]]['z']
-        )
-    return G
 
 
-def calculate_dip(G):
-
-    for edge in G.edges():
-        G.edges[edge]['dip'] = dip(
-            G.nodes[edge[0]]['x'], G.nodes[edge[0]]['z'],
-            G.nodes[edge[1]]['x'], G.nodes[edge[1]]['z']
-        )
-
-    for node in G.nodes():
-        lst = []
-        for edge in G.edges(node):
-            lst.append(G.edges[edge]['dip'])
-        G.nodes[node]['dip'] = sum(lst) / len(lst)
-
-    return G
 
 
-# COMPONENTS
-def number_of_components(G):
-    return len(sorted(nx.connected_components(G)))
+
+
+
+#******************************************************************************
+# (4) FAULT METRICS
+# A couple of functions to calculate fault attributes
+#******************************************************************************
+
+def get_fault_labels(G):
+    """ Get fault labels (sorted list)
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    Returns
+    -------  
+    list
+        List (sorted)
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph' 
+    
+    # Collect labels
+    labels = set()
+    for node in G:
+        labels.add(G.nodes[node]['fault'])
+        
+    return sorted(list(labels))
+
+
+
 
 
 def number_of_faults(G):
-    return len(return_faults(G))
+    """ Calculate the number of faults in G
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    Returns
+    -------  
+    value
+        Int
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    return len(get_fault_labels(G))
 
 
-def max_value_components_nodes(G, attribute):
-    max_values = np.zeros((number_of_components(G)))
-    for m, cc in enumerate(sorted(nx.connected_components(G))):
-        values = np.zeros((len(cc)))
-        for n, node in enumerate(cc):
-            values[n] = G.nodes[node][attribute]
-        max_values[m] = np.max(values)
-    return max_values
+
+def get_fault(G, n):
+    """ Return fault n as subgraph of G
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    n : int
+        Fault number
+        
+    Returns
+    -------  
+    G : nx.graph
+        Subgraph of fault n
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph' 
+        
+    return G.subgraph([node for node in G if G.nodes[node]['fault'] == n])
 
 
-def max_value_faults_nodes(G, attribute):
-    faults = return_faults(G)
-    max_values = np.zeros((len(faults)))
+
+def fault_lengths(G):
+    """ Calculate fault lengths
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    Returns
+    -------  
+    array
+        Int
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+
+    # Calculation
+    labels = get_fault_labels(G)
+    lengths = np.zeros(len(labels))
+
+    for n, label in enumerate(labels):
+        fault = get_fault(G, label)
+        lengths[n] = total_length(fault)
+        
+    return lengths
+
+
+
+def compute_fault_values(G, attribute, mode):
+    """ Calculate common fault value, e.g. min, max, mean
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+    attribute : string
+        Node attribute used for calculation
+    mode: string
+        Type of value that's calculated. Options: min, max, mean, range, sum'
+        
+    Returns
+    -------  
+    value
+        Float
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'     
+    assert (mode in ['min', 'max', 'mean', 'range', 'sum']), 'Node 0 is not in G'    
+
+    # Calculation
+    faults = get_fault_labels(G)
+    values = np.zeros((len(faults)))
+    
+    # Loop through faults
     for n, fault in enumerate(faults):
         nodes = [node for node in G if G.nodes[node]['fault'] == fault]
-        values = np.zeros((len(nodes)))
+        node_values = np.zeros((len(nodes)))
         for m, node in enumerate(nodes):
-            values[m] = G.nodes[node][attribute]
-        max_values[n] = np.max(values)
-    return max_values
+            node_values[m] = G.nodes[node][attribute]                        
+            
+        # Compute fault values
+        if mode == 'min':
+            values[n] = np.min(node_values)
+        
+        elif mode == 'max':
+            values[n] = np.max(node_values)
+        
+        elif mode == 'mean':
+            values[n] = np.mean(node_values)
+        
+        elif mode == 'range':
+            values[n] = np.max(node_values)-np.min(node_values)
+    
+        elif mode == 'sum':
+            values[n] = np.sum(node_values)         
+            
+    return values
 
 
-def mean_x_components(G):
-    mean_values = np.zeros((number_of_components(G)))
-    for m, cc in enumerate(sorted(nx.connected_components(G))):
-        values = np.zeros((len(cc)))
-        for n, node in enumerate(cc):
-            values[n] = G.nodes[node]['pos'][0]
-        mean_values[m] = np.mean(values)
-    return mean_values
 
 
-def mean_y_components(G):
-    mean_values = np.zeros((number_of_components(G)))
-    for m, cc in enumerate(sorted(nx.connected_components(G))):
-        values = np.zeros((len(cc)))
-        for n, node in enumerate(cc):
-            values[n] = G.nodes[node]['pos'][1]
-        mean_values[m] = np.mean(values)
-    return mean_values
+
+
+
+
+#******************************************************************************
+# (5) NETWORK METRICS
+# A couple of functions to calculate network properties
+#******************************************************************************
+
+def total_length(G):
+    """ Calculate network length
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    Returns
+    -------  
+    value
+        Int
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+
+    # Calculation
+    G = compute_edge_length(G)
+    
+    length = 0
+    for edge in G.edges:
+        length = length + G.edges[edge]['length']
+        
+    return length
+
+
+
+
+
+
+
+
 
 
 def extract_attribute(G, image, name):
@@ -355,6 +852,10 @@ def extract_attribute(G, image, name):
         else:
             G.nodes[node][name] = image[int(x), int(y)]
     return G
+
+
+
+
 
 
 def strain_profile(G, attribute):
@@ -381,106 +882,20 @@ def strain_profile(G, attribute):
     return y_resample, strain_rate_resample
 
 
-def max_value_nodes(G, attribute):
-    """ Calculate Network Attribute """
-    values = np.zeros((len(G.nodes)))
-    for n, node in enumerate(G):
-        values[n] = G.nodes[node][attribute]
-    return np.max(values)
 
 
-def min_value_nodes(G, attribute):
-    values = np.zeros((len(G.nodes)))
-    for n, node in enumerate(G):
-        values[n] = G.nodes[node][attribute]
-    return np.min(values)
 
 
-def sum_value_nodes(G, attribute):
-    values = np.zeros((len(G.nodes)))
-    for n, node in enumerate(G):
-        values[n] = G.nodes[node][attribute]
-    return np.sum(values)
 
 
-def mean_value_nodes(G, attribute):
-    values = np.zeros((len(G.nodes)))
-    for n, node in enumerate(G):
-        values[n] = G.nodes[node][attribute]
-    return np.mean(values)
 
 
-def mean_value_edges(G, attribute):
-    values = np.zeros((len(G.edges)))
-    for n, edge in enumerate(G.edges):
-        values[n] = G.edges[edge][attribute]
-    return np.mean(values)
 
 
-def average_x(G):
-    values = np.zeros((len(G.nodes)))
-    for n, node in enumerate(G):
-        values[n] = G.nodes[node]['pos'][0]
-    return np.average(values)
 
 
-def average_y(G):
-    values = np.zeros((len(G.nodes)))
-    for n, node in enumerate(G):
-        values[n] = G.nodes[node]['pos'][1]
-    return np.average(values)
 
 
-def get_limits(G):
-    x_min = min_value_nodes(G, 'x')
-    x_max = max_value_nodes(G, 'x')
-    y_min = min_value_nodes(G, 'x')
-    y_max = max_value_nodes(G, 'x')
-    return x_min, x_max, y_min, y_max
-
-
-def return_components(G):
-    return sorted(
-        [
-            G.nodes[next(iter(c))]['component']
-            for c in sorted(nx.connected_components(G))
-        ]
-    )
-
-
-def return_faults(G):
-    faults = set()
-    for node in G:
-        faults.add(G.nodes[node]['fault'])
-    return list(faults)
-
-
-def calculate_crop(G, edge):
-
-    x = np.zeros((len(G.nodes)))
-    z = np.zeros((len(G.nodes)))
-
-    for n, node in enumerate(G):
-        (x[n], z[n]) = G.nodes[node]['pos']
-
-    x_max = np.max(x)
-    x_min = np.min(x)
-    dx = x_max - x_min
-
-    x_max = int(x_max + 0.1 * dx)
-    x_min = int(x_min - 0.1 * dx)
-
-    z_max = np.max(z)
-    z_min = np.min(z)
-    dz = z_max - z_min
-
-    z_max = int(z_max + edge * dz)
-    z_min = int(z_min - edge * dz)
-
-    if z_min < 0:
-        z_min = 0
-
-    return (x_min, x_max), (z_min, z_max)
 
 
 def calculate_edge_mid_point(G, edge):
@@ -489,6 +904,10 @@ def calculate_edge_mid_point(G, edge):
     y = int((G.nodes[edge[0]]['pos'][1] + G.nodes[edge[1]]['pos'][1])/2)
 
     return (x, y)
+
+
+
+
 
 
 def calculate_mid_points(G):
@@ -505,24 +924,6 @@ def calculate_mid_points(G):
     return H
 
 
-# calculate direction
-
-# def calculate_edge_direction(G, normalize=True):
-
-#     for edge in G.edges:
-
-#         # calculate vector coordinates
-#         dx = G.nodes[edge[0]]['pos'][0] - G.nodes[edge[1]]['pos'][0]
-#         dy = G.nodes[edge[0]]['pos'][1] - G.nodes[edge[1]]['pos'][1]
-
-#         # normalize coordinates
-#         if normalize:
-#             dx = dx/(abs(dx) + abs(dy))
-#             dy = dy/(abs(dx) + abs(dy))
-
-#         G.edges[edge]['direction'] = (dx, dy)
-
-#     return G
 
 
 def calculate_direction(G, cutoff, normalize=True):
@@ -565,6 +966,9 @@ def calculate_direction(G, cutoff, normalize=True):
         G.nodes[node]['dy'] = dy
 
     return G
+
+
+
 
 
 def calculate_pickup_points(G, factor):
@@ -745,24 +1149,4 @@ def calculate_slip(G, H, dt, dim):
     return G
 
 
-def split_graph_by_polarity(G):
-    G_0 = G.copy()
-    G_1 = G.copy()
-    for node in G.nodes:
-        if G.nodes[node]['polarity'] == 0:
-            G_1.remove_node(node)
-        else:
-            G_0.remove_node(node)
-    return G_0, G_1
 
-
-def get_fault_labels(G):
-    labels = set()
-    for node in G:
-        labels.add(G.nodes[node]['fault'])
-    return sorted(list(labels))
-
-
-def get_fault(G, n):
-    nodes = [node for node in G if G.nodes[node]['fault'] == n]
-    return G.subgraph(nodes)

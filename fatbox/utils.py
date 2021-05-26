@@ -1,10 +1,21 @@
-from itertools import count
-
-import networkx as nx
+# Packages
+import vtk
 import numpy as np
 import pandas as pd
+import networkx as nx
 import seaborn as sns
-import vtk
+from itertools import count
+
+
+#==============================================================================
+# This file contains a series of utility functions
+#==============================================================================
+
+
+
+
+
+
 
 
 def get_attribute(G, name):
@@ -44,12 +55,18 @@ def get_times(filename):
     return np.array(times)
 
 
+
+
+
 def get_colors():
     n_comp = 1000
     palette = sns.color_palette(None, 2*n_comp)
     node_color = np.ones((2*n_comp, 4))
     node_color[:, :3] = np.matrix(palette)
     return node_color
+
+
+
 
 
 def get_labels(G, attribute):
@@ -61,6 +78,9 @@ def get_labels(G, attribute):
     colors = [mapping[G.nodes[node][attribute]] for node in nodes]
 
     return np.array(colors)
+
+
+
 
 
 def get_edge_labels(G, attribute):
@@ -111,6 +131,11 @@ def bottom_line(data, threshold):
             m = m - 1
         line[n] = m
     return line.astype(int)
+
+
+
+
+
 
 
 def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
@@ -208,6 +233,15 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
     writer.SetFileName(fileout+'.vtp')
     writer.SetInputData(polydata)
     writer.Write()
+
+
+
+
+
+
+
+
+
 
 
 def func_linear(x, a, b):

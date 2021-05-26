@@ -1,16 +1,29 @@
+# Packages
 import math
-
-import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
-import seaborn as sns
+import networkx as nx
+import matplotlib.pyplot as plt
 from matplotlib import colors
 from matplotlib.collections import PatchCollection
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import seaborn as sns
 from PIL import Image
 
+#==============================================================================
+# This file contains a series of function to plot fault networks (graphs). 
+# This includes functions for plotting: 
+# (1) arrays
+# (2) networks
+#==============================================================================
+
+
+
+#******************************************************************************
+# (1) Useful functions
+# A couple of helper functions
+#******************************************************************************
 
 cmap = colors.ListedColormap(
     [
@@ -32,6 +45,13 @@ def get_node_colors(G, attribute):
         node_color[n, 2] = color[2]
 
     return node_color
+
+
+
+
+
+
+
 
 
 def plot_overlay(label, image):
@@ -57,6 +77,15 @@ def plot_overlay(label, image):
     plt.yticks([])
 
 
+
+
+
+
+
+
+
+
+
 def plot_comparison(data_sets, colorbar=False):
 
     count = len(data_sets)
@@ -66,6 +95,10 @@ def plot_comparison(data_sets, colorbar=False):
         axs[n].imshow(data)
         if colorbar:
             axs[n].colorbar()
+
+
+
+
 
 
 def plot(G, ax=[], color='red', with_labels=False):
@@ -84,23 +117,29 @@ def plot(G, ax=[], color='red', with_labels=False):
     ax.axis('on')
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def plot_components(
-    G, ax=[], crop=False, node_size=0.75, label=True, filename=False
+    G, ax=[], node_size=0.75, label=True, filename=False
 ):
 
     n_comp = 10000
 
     palette = sns.color_palette(None, 2*n_comp)
 
-    if crop:
 
-        (x_min, x_max), (z_min, z_max) = metrics.calculate_crop(
-            G, edge=edge  # edge is undefined!!
-        )
-
-        for node in G:
-            G.nodes[node]['pos'] = (
-                G.nodes[node]['pos'][0]-x_min, G.nodes[node]['pos'][1]-z_min)
 
     if ax == []:
         fig, ax = plt.subplots()
@@ -137,6 +176,16 @@ def plot_components(
 
     if filename:
         plt.savefig(filename, dpi=300)
+
+
+
+
+
+
+
+
+
+
 
 
 def plot_faults(
@@ -181,6 +230,14 @@ def plot_faults(
     ax.tick_params(left=True, bottom=True, top=False, labelleft=True, labelbottom=True, labeltop=False)    
 
     ax.set_ylim(ax.get_ylim()[::-1])
+
+
+
+
+
+
+
+
 
 
 def plot_attribute(
@@ -232,6 +289,16 @@ def plot_attribute(
         plt.savefig(filename, dpi=300)
 
 
+
+
+
+
+
+
+
+
+
+
 def plot_edge_attribute(G, attribute, ax=[]):
 
     if ax == []:
@@ -261,6 +328,16 @@ def plot_edge_attribute(G, attribute, ax=[]):
 
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
     cbar.ax.set_ylabel(attribute, rotation=270)
+
+
+
+
+
+
+
+
+
+
 
 
 def plot_rose(G, ax=[]):
@@ -302,6 +379,12 @@ def plot_rose(G, ax=[]):
     # fig.tight_layout()
 
 
+
+
+
+
+
+
 def cross_plot(G, var0, var1):
 
     x = np.zeros(len(G.nodes))
@@ -328,6 +411,11 @@ def cross_plot(G, var0, var1):
             z[n] = G.nodes[node]['pos'][0]
 
     plt.plot(x, z, '.')
+
+
+
+
+
 
 
 def plot_matrix(matrix, rows, columns, threshold):
@@ -358,10 +446,22 @@ def plot_matrix(matrix, rows, columns, threshold):
                 )
 
 
+
+
+
+
+
 def plot_compare_graphs(G, H):
     fig, ax = plt.subplots(2, 1)
     plot_components(G, ax[0])
     plot_components(H, ax[1])
+
+
+
+
+
+
+
 
 
 def plot_threshold(data, threshold, value, filename=False):
@@ -389,6 +489,12 @@ def plot_threshold(data, threshold, value, filename=False):
         plt.savefig(filename)
 
 
+
+
+
+
+
+
 def plot_connections(matrix, rows, columns):
     for n in range(100):
         threshold = n/100
@@ -397,6 +503,16 @@ def plot_connections(matrix, rows, columns):
         plt.scatter(threshold, len(connections), c='red')
         plt.xlabel('Threshold')
         plt.ylabel('Number of connections')
+
+
+
+
+
+
+
+
+
+
 
 
 def plot_location(log, name, ax=[], title=[]):
@@ -412,6 +528,18 @@ def plot_location(log, name, ax=[], title=[]):
     ax.set_yticklabels([125, 0, -125])
     ax.set_ylabel(name)
     ax.set_title(title)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def bar_plot(attribute, faults, times, steps=[], ax=[]):
@@ -434,6 +562,19 @@ def bar_plot(attribute, faults, times, steps=[], ax=[]):
                 bottom += a
             else:
                 break
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def stack_plot(attribute, faults, times, steps=[], ax=[]):
@@ -460,6 +601,20 @@ def stack_plot(attribute, faults, times, steps=[], ax=[]):
 
     ax.stackplot(x, y, fc=colors[:max_fault, :],
                  alpha=0.75, edgecolor='white', linewidth=0.5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def plot_width(G, ax, width, tips=True, plot=False):

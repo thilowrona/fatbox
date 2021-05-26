@@ -1,9 +1,80 @@
-#!/usr/bin/env python3
+# Packages
 import math
 import random
-
-import networkx as nx
 import numpy as np
+import networkx as nx
+
+#==============================================================================
+# This file contains a series of function to edit fault networks (graphs). 
+# This includes functions for: 
+# (1) 
+#==============================================================================
+
+
+
+#******************************************************************************
+# (1) 
+# A couple of functions to 
+#******************************************************************************
+
+
+
+
+
+
+
+
+
+def scale(G, fx, fy):
+    """ Scale coordinates (x,y) of graph by factor (fx, fy)
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    fx : float
+    fy : float
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"    
+    assert isinstance(fx, int) or isinstance(fx, float), "fx is neither int nor float"
+    assert isinstance(fy, int) or isinstance(fy, float), "fx is neither int nor float"
+    
+    # Scaling
+    for node in G:
+        G.nodes[node]['x'] = G.nodes[node]['x'][0]*fx
+        G.nodes[node]['y'] = G.nodes[node]['y'][1]*fy
+        
+    return G
+
+
+
+
+
+
+def select_components(G, components):
+    H = G.copy()
+    if type(components) != list:
+        selected_nodes = [
+            n[0] for n in H.nodes(data=True)
+            if n[1]['component'] == components
+        ]
+    else:
+        selected_nodes = [
+            n[0] for n in H.nodes(data=True)
+            if n[1]['component'] in components
+        ]
+    H = H.subgraph(selected_nodes)
+    return H
+
+
+
 
 
 
@@ -978,3 +1049,20 @@ def write_slip_to_displacement(G, dim):
             G.nodes[node]['throw'] = G.nodes[node]['slip_z']
             G.nodes[node]['displacement'] = G.nodes[node]['slip']
     return G
+
+
+
+
+
+
+
+def split_graph_by_polarity(G):
+    G_0 = G.copy()
+    G_1 = G.copy()
+    for node in G.nodes:
+        if G.nodes[node]['polarity'] == 0:
+            G_1.remove_node(node)
+        else:
+            G_0.remove_node(node)
+    return G_0, G_1
+
