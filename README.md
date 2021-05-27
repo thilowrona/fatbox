@@ -8,7 +8,7 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 
 # Getting started
 ## Tutorials
-If you wanna get started, we highly recommend checking out some of the [tutorials](https://github.com/thilowrona/fatbox_tutorials)
+If you wanna get started, we highly recommend checking out some of our [tutorials](https://github.com/thilowrona/fatbox_tutorials) as well as our [documentation](https://fatbox.readthedocs.io/en/latest/index.html)
 
 ## Your own machine
 You can also use the fault analysis toolbox on your own machine. All you need is a Python 3 enviromnent, then you can install the toolbox:
