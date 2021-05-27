@@ -3,27 +3,26 @@ import math
 import random
 import numpy as np
 import networkx as nx
+import matplotlib.pyplot as plt
+
+# Fatbox
+import fatbox
 
 #==============================================================================
 # This file contains a series of function to edit fault networks (graphs). 
 # This includes functions for: 
-# (1) 
+# (1) nodes
+# (2) edges
+# (3) components (i.e. connected nodes)
+# (4) the whole network 
 #==============================================================================
 
 
 
 #******************************************************************************
-# (1) 
-# A couple of functions to 
+# (1) NODE EDITS
+# A couple of functions to calculate node attributes
 #******************************************************************************
-
-
-
-
-
-
-
-
 
 def scale(G, fx, fy):
     """ Scale coordinates (x,y) of graph by factor (fx, fy)
@@ -56,85 +55,25 @@ def scale(G, fx, fy):
 
 
 
-
-
-def select_components(G, components):
-    H = G.copy()
-    if type(components) != list:
-        selected_nodes = [
-            n[0] for n in H.nodes(data=True)
-            if n[1]['component'] == components
-        ]
-    else:
-        selected_nodes = [
-            n[0] for n in H.nodes(data=True)
-            if n[1]['component'] in components
-        ]
-    H = H.subgraph(selected_nodes)
-    return H
-
-
-
-
-
-
-def array_to_points(arr):
-    N = np.count_nonzero(arr)
-    points = np.zeros((N, 2))
-    (points[:, 1], points[:, 0]) = np.where(arr != 0)
-    return points
-
-
-def add_edges(G, N):
-
-    # def distance_between_nodes(G, node0, node1):
-    #     (x0, y0) = G.nodes[node0]['pos']
-    #     (x1, y1) = G.nodes[node1]['pos']
-    #     return math.sqrt((x0-x1)**2+(y0-y1)**2)
-
-    def find_closest(G, node):
-        threshold = 1000000
-        for other in G:
-            d = metrics.distance_between_nodes_pix(G, node, other)
-            if 0 < d < threshold:
-                threshold = d
-                index = other
-        return index
-
-    for node in G:
-        print(str(node) + ' of ' + str(N))
-        closest = find_closest(G, node)
-        if (closest, node) not in G.edges:
-            G.add_edge(node, closest)
-            G.nodes[node]['edges'] = 1
-            G.nodes[closest]['edges'] = 1
-
-    def clostest_except(G, node, cn):
-        index = float('nan')
-        threshold = 1000000
-        for other in G:
-            if other not in cn:
-                d = metrics.distance_between_nodes_pix(G, node, other)
-                if 0 < d < threshold:
-                    threshold = d
-                    index = other
-        return index, threshold
-
-    for node in G:
-        print(str(node) + ' of ' + str(N))
-        if len(G.edges(node)) == 1:
-            cn = nx.node_connected_component(G, node)
-            index, threshold = clostest_except(G, node, cn)
-            if threshold < 2:
-                G.add_edge(node, index)
-                G.nodes[node]['edges'] = 1
-                G.nodes[index]['edges'] = 1
-    return G
-
-
 def remove_triangles(G):
+    """ Remove triangles from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    H : nx.graph
+        Graph
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
 
-    G = metrics.compute_edge_length(G)
+    # Calculation
+    G = fatbox.metrics.compute_edge_length(G)
 
     # Find triangles through edges
     triangles = []
@@ -165,8 +104,27 @@ def remove_triangles(G):
     return H
 
 
-def remove_cycles(G):
 
+
+
+def remove_cycles(G):
+    """ Remove cycles from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     nodes_to_remove = set()
 
     # Find cycles
@@ -189,47 +147,57 @@ def remove_cycles(G):
     return G
 
 
-# COMPONENTS
-def label_components(G):
-    for label, cc in enumerate(sorted(nx.connected_components(G))):
-        for n in cc:
-            G.nodes[n]['component'] = label
-    return G
 
 
-def select_components(G, components):
+def remove_triple_junctions(G):
+    """ Remove triple junction from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     H = G.copy()
-    if type(components) != list:
-        selected_nodes = [
-            n[0] for n in H.nodes(data=True)
-            if n[1]['component'] == components
-        ]
-    else:
-        selected_nodes = [
-            n[0] for n in H.nodes(data=True)
-            if n[1]['component'] in components
-        ]
-    H = H.subgraph(selected_nodes)
+    for node in G:
+        if H.nodes[node]['edges'] == 3:
+            H.remove_node(node)
     return H
 
 
-def remove_component(G, component):
-    for cc in sorted(nx.connected_components(G)):
-        for n in cc:
-            if G.nodes[n]['component'] == component:
-                G.remove_node(n)
-    return G
-
-
-def remove_small_components(G, minimum_size=10):
-    for cc in sorted(nx.connected_components(G)):
-        if len(cc) < minimum_size:
-            for n in cc:
-                G.remove_node(n)
-    return G
 
 
 def find_neighbor_except(G, neighbor, node):
+    """ Find a neighbor of node expect for the one given
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    neighbor : int
+        Neighbor to avoid
+    node : int
+        Node
+    
+    Returns
+    -------  
+    neighbor : int
+        Neighbor
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     if len(list(G.neighbors(neighbor))) != 2:
         return neighbor
     else:
@@ -238,24 +206,67 @@ def find_neighbor_except(G, neighbor, node):
                 return nn
 
 
+
+
+
+
 def find_new_neighbors(G, neighbors, origins):
+    """ Find new neighbors of node expect origins
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    neighbors : list
+        Neighbors to avoid
+    origins : list
+        Origins to use
+    
+    Returns
+    -------  
+    new_neighbor : list
+        Neighbors
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation 
     new_neighbors = [None]*3
     for k in range(3):
         new_neighbors[k] = find_neighbor_except(G, neighbors[k], origins[k])
+        
     return new_neighbors
 
 
-def split_triple_junctions(G, dos, plot=False):
-    # This function splits up triple junctions (or y-nodes) based on their
-    # orientation, so that the two branches most closely aligned remain
-    # connected and the splay is cut off.
-    #
-    # Parameters
-    # ---------------------------------------------------------------------
-    # dos - depth of search or the number of nodes used to determine the
-    # orientation of each branch
-    import matplotlib.pyplot as plt
 
+
+
+
+def split_triple_junctions(G, dos, plot=False):
+    """ This function splits up triple junctions (or y-nodes) based on their 
+    orientation, so that the two branches most closely aligned remain
+    connected and the splay is cut off.
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    dos : int
+        Depth of search (i.e. distance from junction)
+    plot : bolean
+        Plot triple junctions (default: False)
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation     
     count = 0
 
     for node in G:
@@ -509,71 +520,293 @@ def split_triple_junctions(G, dos, plot=False):
             if plot:
                 plt.show()
 
-            # # Stop criteria to look at certain junctions
-            # if count==29:
-            #     break
-
     return G
 
 
-# def split(G, depth, tol):
-
-    #  for node in G:
-    #      if G.degree[node] == 3:
-    #          true_neighbors = list(G.neighbors(node))
-
-    #          origins = [node]*3
-    #          neighbors = true_neighbors
-    #          for n in range(depth):
-    #              new_neighbors = find_new_neighbors(G, neighbors, origins)
-    #              origins = neighbors
-    #              neighbors = new_neighbors
-
-    #          strikes = np.zeros(3)
-
-    #          for k in range(3):
-    #              strikes[k] = strike_between_nodes_pix(
-    #           G, node, new_neighbors[k])
-
-    #          print('Strikes')
-    #          print(strikes)
-
-    #          # strike_difference = np.zeros(3)
-    #          # strike_difference[0] = abs(strikes[0]-strikes[1])
-    #          # strike_difference[1] = abs(strikes[1]-strikes[2])
-    #          # strike_difference[2] = abs(strikes[0]-strikes[2])
-
-    #          # print('Strike difference')
-    #          # print(strike_difference)
-
-    #          # index = np.arange(3)
-    #          # p = strike_difference.argsort()
-    #          # index = index[strike_difference.argsort()]
-    #          # strike_difference = strike_difference[
-    #          # strike_difference.argsort()]
-
-#              # if strike_difference[0] < tol:
-#              #     G.remove_edge(node, true_neighbors[index[0]])
-
-#              # if strike_difference[1] < tol:
-#              #     G.remove_edge(node, true_neighbors[index[1]])
 
 
-#              if abs(strikes[0]-strikes[1]) < tol:
-#                  print(2)
-#                  G.remove_edge(node, true_neighbors[2])
-#              if abs(strikes[1]-strikes[2])  < tol:
-#                  print(0)
-#                  G.remove_edge(node, true_neighbors[0])
-#              if abs(strikes[0]-strikes[2])  < tol:
-#                  print(1)
-#                  G.remove_edge(node, true_neighbors[1])
 
-#      return G
+def remove_below(G, attribute, value):
+    """ Remove attribute below certain value
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Attribute
+    value : float
+        Value
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation 
+    for node in G.nodes:
+        if G.nodes[node][attribute] > value:
+            G.nodes[node][attribute] = float('nan')
+    return G
+
+
+
+
+def closest_node(node, nodes):
+    """ Closest node in nodes
+    
+    Parameters
+    ----------
+    node : int
+        Node
+    nodes : list
+        Nodes
+    
+    Returns
+    -------  
+    value : int
+        Closest node
+    """ 
+
+    nodes = np.asarray(nodes)
+    dist = np.sum((nodes - node)**2, axis=1)
+    return np.argmin(dist)
+
+
+
+
+def distance_between_points(p0, p1):
+    """ Distance between two points (x0, y0), (x1, y1)
+    
+    Parameters
+    ----------
+    p0 : tuple
+        Point 0
+    p1 : tuple
+        Point 1
+    
+    Returns
+    -------  
+    distance : value
+        Distance
+    """    
+    return math.sqrt((p0[1] - p1[1])**2+(p0[0] - p1[0])**2)
+
+
+
+
+def min_dist(point, G):
+    """ Minimum distance between point and graph
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    threshold : value
+        Minimum distance
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation 
+    threshold = 1e8
+    for node in G:
+        if distance_between_points(point, G.nodes[node]['pos']) < threshold:
+            threshold = distance_between_points(point, G.nodes[node]['pos'])
+            
+    return threshold
+
+
+
+
+
+
+
+#******************************************************************************
+# (2) EDGE METRICS
+# A couple of functions to calculate edge attributes
+#******************************************************************************
+
+def remove_self_edge(G):
+    """ Remove self edges, e.g. (1,1), (3,3)
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    for edge in G.edges:
+        if edge[0] == edge[1]:
+            G.remove_edge(*edge)
+    return G
+
+
+
+
+
+#******************************************************************************
+# (3) COMPONENT EDITS
+# A couple of functions to edit components
+#******************************************************************************
+
+def label_components(G):
+    """ Label components in network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation   
+    for label, cc in enumerate(sorted(nx.connected_components(G))):
+        for n in cc:
+            G.nodes[n]['component'] = label
+            
+    return G
+
+
+
+
+def select_components(G, components):
+    """ Select component(s) from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    components : list
+        Components
+    
+    Returns
+    -------  
+    H : nx.graph
+        Graph
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation    
+    H = G.copy()
+    if type(components) != list:
+        selected_nodes = [n[0] for n in H.nodes(data=True) if n[1]['component'] == components]
+    else:
+        selected_nodes = [n[0] for n in H.nodes(data=True) if n[1]['component'] in components]
+    H = H.subgraph(selected_nodes)
+    
+    return H
+
+
+
+
+def remove_component(G, component):
+    """ Remove a component
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    for cc in sorted(nx.connected_components(G)):
+        for n in cc:
+            if G.nodes[n]['component'] == component:
+                G.remove_node(n)
+    return G
+
+
+
+
+def remove_small_components(G, minimum_size=10):
+    """ Remove a component below minimum size
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    minium_size : int
+        Minimum size for components
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    for cc in sorted(nx.connected_components(G)):
+        if len(cc) < minimum_size:
+            for n in cc:
+                G.remove_node(n)
+                
+    return G
+
+
 
 
 def connect_components(G, cc0, cc1, relabel=True):
+    """ Connect two components in network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    cc0 : list
+        Component 0
+    cc1 : list
+        Compoennt 1
+    relabel : bolean
+        Whether to relabel components or not
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """     
 
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation 
     edge0 = []
     for node in cc0:
         if G.nodes[node]['edges'] == 1:
@@ -588,7 +821,7 @@ def connect_components(G, cc0, cc1, relabel=True):
 
     for e0 in edge0:
         for e1 in edge1:
-            distance = metrics.distance_between_nodes_pix(G, e0, e1)
+            distance = fatbox.metrics.distance_between_nodes(G, e0, e1)
             if distance < value:
                 value = distance
                 ep0 = e0
@@ -606,8 +839,272 @@ def connect_components(G, cc0, cc1, relabel=True):
     return G
 
 
-def expand_network(G, relabel=True, vertical_shift=960, distance=5):
 
+
+
+def min_dist_comp(G, cc0, cc1):
+    """ Minimum distance between components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    cc0 : list
+        Component 0
+    cc1 : list
+        Compoennt 1
+        
+    Returns
+    -------  
+    threshold : float
+        Minimum distance
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    threshold = 1e6
+    for n0 in cc0:
+        for n1 in cc1:
+            distance = fatbox.metrics.distance_between_nodes(G, n0, n1)
+            if distance < threshold:
+                threshold = distance
+                
+    return threshold
+
+
+
+
+
+def connect_close_components(G, value):
+    """ Connect components which are closer than value
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    value : float
+        Minimum distance
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    for cc0 in sorted(nx.connected_components(G)):
+        for cc1 in sorted(nx.connected_components(G)):
+            if min_dist_comp(G, cc0, cc1) < value:
+                G = connect_components(G, cc0, cc1)
+                
+    return G
+
+
+
+
+
+
+def max_dist_comp(G, cc0, cc1):
+    """ Maximum distance between components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    cc0 : list
+        Component 0
+    cc1 : list
+        Compoennt 1
+        
+    Returns
+    -------  
+    threshold : float
+        Maximum distance
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    threshold = 0
+    for n0 in cc0:
+        for n1 in cc1:
+            distance = fatbox.metrics.distance_between_nodes(G, n0, n1)
+            if distance > threshold:
+                threshold = distance
+    return threshold
+
+
+
+
+
+def similarity_between_components(G, H):
+    """ Similarity between components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    H : nx.graph
+        Graph
+        
+    Returns
+    -------  
+    value : float
+        Similarity
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    # Determine short and long graph
+    if len(G.nodes) > len(H.nodes):
+        short = H
+        long = G
+    else:
+        short = G
+        long = H
+
+    N = len(long.nodes)
+    distance = np.zeros((N))
+
+    for n in range(N):
+        distance[n] = min_dist(long.nodes[random.choice(list(long))]['pos'], short)
+
+    return np.average(distance)
+
+
+
+
+
+def assign_components(G, components):
+    """ Assign components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    components : list
+        Components
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    for n, cc in enumerate(sorted(nx.connected_components(G))):
+        for node in cc:
+            G.nodes[node]['component'] = components[n]
+    return G
+
+
+
+
+
+def common_components(G, H):
+    """ Common components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    H : nx.graph
+        Graph
+        
+    Returns
+    -------  
+    list : list
+        List of common components
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+    assert isinstance(H, nx.Graph), "H is not a NetworkX graph"
+    
+    # Calculation
+    C_G = fatbox.metrics.get_component_labels(G)
+    C_H = fatbox.metrics.get_component_labels(H)
+    
+    return list(set(C_G) & set(C_H))
+
+
+
+
+
+def unique_components(G_0, G_1):
+    """ Unique components
+    
+    Parameters
+    ----------
+    G_0 : nx.graph
+        Graph
+    G_1 : nx.graph
+        Graph
+        
+    Returns
+    -------  
+    list : list
+        List of unique components
+    """      
+    
+    # Assertions
+    assert isinstance(G_0, nx.Graph), "G_0 is not a NetworkX graph"
+    assert isinstance(G_1, nx.Graph), "G_1 is not a NetworkX graph"
+    
+    # Calculation   
+    G_0_components = set(fatbox.metrics.get_component_labels(G_0))
+    G_1_components = set(fatbox.metrics.get_component_labels(G_1))
+
+    return ([item for item in G_0_components if item not in G_1_components],
+            [item for item in G_1_components if item not in G_0_components])
+
+
+
+
+
+
+
+
+#******************************************************************************
+# (4) NETWORK EDITS
+# A couple of functions to edit the network
+#******************************************************************************
+
+def expand_network(G, relabel=True, vertical_shift=960, distance=5):
+    """ Connect two components in network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    relabel : bolean
+        Relabel components
+    vertical_shift : int
+        Vertical shift applied to network
+    distance : int
+        Distance from edge
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation   
     def minimum_y(G, nodes):
 
         minimum = 1000000
@@ -705,37 +1202,29 @@ def expand_network(G, relabel=True, vertical_shift=960, distance=5):
     return G
 
 
-# Connect close components
-def min_dist_comp(G, cc0, cc1):
-    threshold = 1e6
-    for n0 in cc0:
-        for n1 in cc1:
-            distance = metrics.distance_between_nodes_pix(G, n0, n1)
-            if distance < threshold:
-                threshold = distance
-    return threshold
 
 
-def connect_close_components(G, value):
-    for cc0 in sorted(nx.connected_components(G)):
-        for cc1 in sorted(nx.connected_components(G)):
-            if min_dist_comp(G, cc0, cc1) < value:
-                G = connect_components(G, cc0, cc1)
-    return G
 
-
-def max_dist_comp(G, cc0, cc1):
-    threshold = 0
-    for n0 in cc0:
-        for n1 in cc1:
-            distance = metrics.distance_between_nodes2(G, n0, n1)
-            if distance > threshold:
-                threshold = distance
-    return threshold
-
-
-# SIMPLIFY GRAPH
 def simplify(G, degree):
+    """ Simplify network to a degree
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    degree : int
+        Degree of simplification
+    
+    Returns
+    -------  
+    H : nx.graph
+        Graph
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation 
     H = G.copy()
     for _ in range(degree):
         for n, node in enumerate(list(nx.dfs_preorder_nodes(H))):
@@ -747,80 +1236,71 @@ def simplify(G, degree):
     return H
 
 
-# SIMILARITY
-# COMPUTE CONNECTIONS
-# Distance between two points
-def distance_between_points(n0, n1):
-    return math.sqrt((n0[1] - n1[1])**2+(n0[0] - n1[0])**2)
 
 
-# Minimum distance between point and graph
-def min_dist(point, graph):
-    threshold = 1000000
-    for node in graph:
-        if distance_between_points(
-            point, graph.nodes[node]['pos']
-        ) < threshold:
-            threshold = distance_between_points(
-                point, graph.nodes[node]['pos']
-            )
-    return threshold
+def split_graph_by_polarity(G):
+    """ Split network by polarity
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    degree : int
+        Degree of simplification
+    
+    Returns
+    -------  
+    G_0 : nx.graph
+        Graph
+    G_1 : nx.graph
+        Graph
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    G_0 = G.copy()
+    G_1 = G.copy()
+    for node in G.nodes:
+        if G.nodes[node]['polarity'] == 0:
+            G_1.remove_node(node)
+        else:
+            G_0.remove_node(node)
+    return G_0, G_1
 
 
-# Measure of similarity between two components
-def similarity_between_components(G, H):
-
-    # Determine short and long graph
-    if len(G.nodes) > len(H.nodes):
-        short = H
-        long = G
-    else:
-        short = G
-        long = H
-
-    N = len(long.nodes)
-    distance = np.zeros((N))
-
-    for n in range(N):
-        distance[n] = min_dist(
-            long.nodes[random.choice(list(long))]['pos'], short
-        )
-
-    return np.average(distance)
-
-
-def get_components(G):
-    components = []
-    for cc in sorted(nx.connected_components(G)):
-        components.append(G.nodes[cc.pop()]['component'])
-    return components
-
-
-def assign_components(G, components):
-    for n, cc in enumerate(sorted(nx.connected_components(G))):
-        for node in cc:
-            G.nodes[node]['component'] = components[n]
-    return G
-
-
-def common_components(G, H):
-    C_G = get_components(G)
-    C_H = get_components(H)
-    return list(set(C_G) & set(C_H))
-
-
-def unique_components(G_0, G_1):
-    G_0_components = set(get_components(G_0))
-    G_1_components = set(get_components(G_1))
-
-    return ([item for item in G_0_components if item not in G_1_components],
-            [item for item in G_1_components if item not in G_0_components])
 
 
 def similarity_between_graphs(G, H, normalize=True):
+    """ Similarity between components of network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    H : nx.graph
+        Graph
+    normalize : bolean
+        Normalize similarity matrix
+    
+    Returns
+    -------  
+    matrix : np.array
+        Similarity matrix
+    components_G : list
+        Int
+    components_H : list
+        Int        
+    """     
 
-    components_G = sorted(components(G))  # components undefined!?
-    components_H = sorted(components(H))
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+    assert isinstance(H, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    components_G = sorted(fatbox.metrics.get_component_labels(G))  # components undefined!?
+    components_H = sorted(fatbox.metrics.get_component_labels(H))
 
     matrix = np.zeros((len(components_G), len(components_H)))
 
@@ -841,19 +1321,67 @@ def similarity_between_graphs(G, H, normalize=True):
     return matrix, components_G, components_H
 
 
+
+
+
 # Compute connections from similarity
 def similarity_to_connection(matrix, rows, columns, threshold):
+    """ Convert similarity to connections
+    
+    Parameters
+    ----------
+    matrix : np.array
+        Similarity matrix
+    rows : list
+        Components 0
+    columns : list
+        Components 1
+    threshold : float
+        Threshold for connections
+    
+    Returns
+    -------  
+    connections : list (tuples)
+        Connections between components       
+    """     
+
+    # Calculation
     connections = []
     for col in range(matrix.shape[0]):
         for row in range(matrix.shape[1]):
             if matrix[col, row] < threshold:
                 connections.append([columns[row], rows[col]])
+                
     return connections
 
 
-# RELABEL
-def relabel(G, connections, count):
 
+
+
+def relabel(G, connections, count):
+    """ Relabel components of network based on connections
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    connections : list (tuples)
+        Connections between components  
+    count : int
+        Maximum component
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    count : int
+        Maximum component
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     sources = np.zeros((len(connections)), int)
     targets = np.zeros((len(connections)), int)
 
@@ -863,7 +1391,7 @@ def relabel(G, connections, count):
 
     highest_index = max(np.max(sources), count)
 
-    components_old = get_components(G)
+    components_old = fatbox.metrics.get_component_labels(G)
     components_new = [None] * len(components_old)
 
     for n in range(len(components_old)):
@@ -880,79 +1408,29 @@ def relabel(G, connections, count):
     return G, count
 
 
-def dip_diff(d0, d1):
-    if d0 >= 45:
-        if d1 > 0:
-            return abs(d1-d0)
-        if d1 <= 0:
-            return abs(d0+d1)
-
-    if 0 < d0 < 45:
-        if d1 >= 0:
-            return abs(d1-d0)
-        if d1 < 0:
-            if d1 > -45:
-                return d0 + abs(d1)
-            if d1 <= -45:
-                return 180 - d0 + d1
-
-    if d0 == 0:
-        return abs(d1)
-
-    if 0 > d0 > -45:
-        if d1 <= 0:
-            return abs(d0-d1)
-        if d1 > 0:
-            if d1 > 45:
-                return d0 + d1
-            if d1 <= 45:
-                return abs(d0) + d1
-
-    if d0 <= -45:
-        if d1 <= 0:
-            return abs(d1-d0)
-        if d1 > 0:
-            if d1 > 45:
-                return abs(d0+d1)
-            if d1 <= 45:
-                return 180 + d0 - d1
-
-
-def dip_matrix(dips):
-    N = dips.shape[0]
-    diff = np.zeros((N, N))
-
-    for n in range(N):
-        for m in range(N):
-            diff[n, m] = dip_diff(dips[n], dips[m])
-
-    return diff
-
-
-def remove_below(G, attribute, value):
-    for node in G.nodes:
-        if G.nodes[node][attribute] > value:
-            G.nodes[node][attribute] = float('nan')
-    return G
-
-
-def remove_y_nodes(G):
-    H = G.copy()
-    for node in G:
-        if H.nodes[node]['edges'] == 3:
-            H.remove_node(node)
-    return H
-
-
-def remove_self_edge(G):
-    for edge in G.edges:
-        if edge[0] == edge[1]:
-            G.remove_edge(*edge)
-    return G
 
 
 def combine_graphs(G, H):
+    """ Combine two graphs
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    H : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    F : nx.graph
+        Graph      
+    """     
 
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+    assert isinstance(H, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     highest_node = max(list(G.nodes)) + 1
     nodes_new = [node + highest_node for node in H.nodes]
 
@@ -964,7 +1442,29 @@ def combine_graphs(G, H):
     return F
 
 
+
+
+
 def get_displacement(G, dim):
+    """ Get displacments from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    dim : int
+        Dimension of graph
+    
+    Returns
+    -------  
+    points : array
+        Float     
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     if dim == 2:
         points = np.zeros((len(list(G)), 6))
         for n, node in enumerate(G):
@@ -987,7 +1487,29 @@ def get_displacement(G, dim):
     return points
 
 
+
+
+
 def get_slip_rate(G, dim):
+    """ Get slip rate from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    dim : int
+        Dimension of graph
+    
+    Returns
+    -------  
+    points : array
+        Float    
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     if dim == 2:
         points = np.zeros((len(list(G)), 6))
         for n, node in enumerate(G):
@@ -1010,13 +1532,29 @@ def get_slip_rate(G, dim):
     return points
 
 
-def closest_node(node, nodes):
-    nodes = np.asarray(nodes)
-    dist = np.sum((nodes - node)**2, axis=1)
-    return np.argmin(dist)
+
 
 
 def assign_displacement(G, points, dim):
+    """ Assign displacments from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    dim : int
+        Dimension of graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph      
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     if dim == 2:
         for node in G:
             for point in points:
@@ -1035,7 +1573,29 @@ def assign_displacement(G, points, dim):
     return G
 
 
+
+
+
 def write_slip_to_displacement(G, dim):
+    """ Write slip to displacment
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    dim : int
+        Dimension of graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph      
+    """     
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     if dim == 2:
         for node in G:
             G.nodes[node]['heave'] = G.nodes[node]['slip_x']
@@ -1053,16 +1613,4 @@ def write_slip_to_displacement(G, dim):
 
 
 
-
-
-
-def split_graph_by_polarity(G):
-    G_0 = G.copy()
-    G_1 = G.copy()
-    for node in G.nodes:
-        if G.nodes[node]['polarity'] == 0:
-            G_1.remove_node(node)
-        else:
-            G_0.remove_node(node)
-    return G_0, G_1
 

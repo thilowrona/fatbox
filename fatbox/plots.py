@@ -34,6 +34,25 @@ cmap = colors.ListedColormap(
 
 
 def get_node_colors(G, attribute):
+    """ Get node colors for plotting
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Attribute name
+    
+    Returns
+    -------  
+    array : array
+        Node colors
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
     n_comp = 10000
     palette = sns.color_palette(None, 2*n_comp)
     node_color = np.zeros((len(G), 3))
@@ -50,11 +69,25 @@ def get_node_colors(G, attribute):
 
 
 
-
-
-
+#******************************************************************************
+# (2) Array plotting
+# A couple of functions to visulize arrays
+#******************************************************************************
 
 def plot_overlay(label, image):
+    """ Plot a label onto of image
+    
+    Parameters
+    ----------
+    label : np.array
+        Label
+    image : np.array
+        Image
+    
+    Returns
+    -------  
+
+    """
 
     label = (label-np.min(label))/(np.max(label)-np.min(label))
 
@@ -72,37 +105,93 @@ def plot_overlay(label, image):
 
     background.paste(overlay, (0, 0), overlay)
 
+    plt.figure()
     plt.imshow(background)
-    plt.xticks([])
-    plt.yticks([])
 
 
 
 
+def plot_comparison(data_sets):
+    """ Plot a couple of images for comparison
+    
+    Parameters
+    ----------
+    data_sets : list of np.array
+        List of data sets       
+    
+    Returns
+    -------  
 
-
-
-
-
-
-
-def plot_comparison(data_sets, colorbar=False):
-
+    """
     count = len(data_sets)
 
     fig, axs = plt.subplots(count, 1, figsize=(12, 12))
     for n, data in enumerate(data_sets):
         axs[n].imshow(data)
-        if colorbar:
-            axs[n].colorbar()
 
 
 
 
 
+def plot_threshold(data, threshold, value, filename=False):
+
+    fig, axs = plt.subplots(2, 1, figsize=(15, 10))
+
+    # First plot
+    p0 = axs[0].imshow(data)
+
+    # Color bar locator
+    divider = make_axes_locatable(axs[0])
+    cax = divider.append_axes("right", size="3%", pad=0.15)
+    cb0 = fig.colorbar(p0, ax=axs[0], cax=cax)
+    cb0.ax.plot([-1, 1], [value]*2, 'r')
+
+    # Second plot
+    p1 = axs[1].imshow(threshold)
+
+    # Color bar locator
+    divider = make_axes_locatable(axs[1])
+    cax = divider.append_axes("right", size="3%", pad=0.15)
+    cb0 = fig.colorbar(p1, ax=axs[1], cax=cax)
+
+    if filename:
+        plt.savefig(filename)
+
+
+
+
+
+
+
+
+
+#******************************************************************************
+# (3) Network plotting
+# A couple of functions to visulize networks
+#******************************************************************************
 
 def plot(G, ax=[], color='red', with_labels=False):
-
+    """ Plot network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    ax : plt axis
+        Axis
+    color : str
+        Color of network
+    with_labels : bolean
+        Whether to plot labels
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
     if ax == []:
         fig, ax = plt.subplots()
 
@@ -113,32 +202,37 @@ def plot(G, ax=[], color='red', with_labels=False):
             with_labels=with_labels,
             ax=ax)
 
-    # plt.axis('equal')
-    ax.axis('on')
+    ax.axis('on')  # turns on axis
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-def plot_components(
-    G, ax=[], node_size=0.75, label=True, filename=False
-):
-
+def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
+    """ Plot network components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    ax : plt axis
+        Axis
+    node_size : float
+        Size of network nodes
+    label : bolean
+        Whether to plot labels
+    filename : str
+        Save figure with this name
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
     n_comp = 10000
-
     palette = sns.color_palette(None, 2*n_comp)
-
 
 
     if ax == []:
@@ -181,19 +275,31 @@ def plot_components(
 
 
 
-
-
-
-
-
-
-
-def plot_faults(
-    G, ax=[], crop=False, node_size=0.75, label=True, filename=False
-):
-
+def plot_faults(G, ax=[], node_size=0.75, label=True, filename=False):
+    """ Plot network faults
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    ax : plt axis
+        Axis
+    node_size : float
+        Size of network nodes
+    label : bolean
+        Whether to plot labels
+    filename : str
+        Save figure with this name
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
     n_comp = 10000
-
     palette = sns.color_palette(None, 2*n_comp)
 
     if ax == []:
@@ -225,26 +331,40 @@ def plot_faults(
             ax.text(y_avg, x_avg, label, fontsize=15,
                     color=palette[G.nodes[n]['fault']])
 
-    ax.axis('equal')  # turns on axis
-    ax.axis('on')
+    ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, top=False, labelleft=True, labelbottom=True, labeltop=False)    
 
-    ax.set_ylim(ax.get_ylim()[::-1])
 
 
 
-
-
-
-
-
-
-
-def plot_attribute(
-    G, attribute, ax=[], vmin=[], vmax=[], crop=False,
-    node_size=1, filename=False
-):
-
+def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, filename=False):
+    """ Plot network node attribute
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Attribute used for plotting
+    ax : plt axis
+        Axis
+    vmin : float
+        Minium value
+    vmax : float
+        Maximum value
+    node_size : float
+        Size of network nodes        
+    filename : str
+        Save figure with this name
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
     if ax == []:
         fig, ax = plt.subplots()
 
@@ -254,13 +374,6 @@ def plot_attribute(
     if vmax == []:
         vmax = metrics.max_value_nodes(G, attribute)
 
-    if crop:
-        (x_min, x_max), (z_min, z_max) = metrics.calculate_crop(
-            G, edge=edge  # edge is undefined!
-        )
-        for node in G:
-            G.nodes[node]['pos'] = (
-                G.nodes[node]['pos'][0]-x_min, G.nodes[node]['pos'][1]-z_min)
 
     # Colorbar
     cmap = plt.cm.seismic
@@ -278,6 +391,61 @@ def plot_attribute(
     ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
+    sm.set_array([])
+
+    cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
+    cbar.ax.set_ylabel(attribute, rotation=270)
+
+    if filename:
+        plt.savefig(filename, dpi=300)
+
+
+
+
+
+def plot_edge_attribute(G, attribute, ax=[]):
+    """ Plot network edge attribute
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Attribute used for plotting
+    ax : plt axis
+        Axis      
+    filename : str
+        Save figure with this name
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
+    if ax == []:
+        fig, ax = plt.subplots()
+
+    nx.draw(G,
+            pos=nx.get_node_attributes(G, 'pos'),
+            node_size=0.001,
+            ax=ax)
+
+    nx.draw_networkx_edges(G,
+                           pos=nx.get_node_attributes(G, 'pos'),
+                           edge_color=np.array([G.edges[edge][attribute] for edge in G.edges]),
+                           edge_cmap=plt.cm.twilight_shifted,
+                           ax=ax)
+    ax.axis('on')
+
+    # Colorbar
+    cmap = plt.cm.twilight_shifted
+    vmax = metrics.max_value_edges(G, attribute)
+    vmin = metrics.min_value_edges(G, attribute)
+
     sm = plt.cm.ScalarMappable(
         cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
     sm.set_array([])
@@ -292,6 +460,76 @@ def plot_attribute(
 
 
 
+def cross_plot(G, var0, var1):
+    """ Cross-plot two network (node) properties
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    var0 : str
+        Attribute to plot as x-axis
+    var0 : str
+        Attribute to plot as y-axis  
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
+    x = np.zeros(len(G.nodes))
+    z = np.zeros(len(G.nodes))
+
+    if var0 == 'x':
+        for n, node in enumerate(G):
+            x[n] = G.nodes[node]['pos'][1]
+            z[n] = G.nodes[node][var1]
+
+    if var0 == 'z':
+        for n, node in enumerate(G):
+            x[n] = G.nodes[node]['pos'][0]
+            z[n] = G.nodes[node][var1]
+
+    if var1 == 'x':
+        for n, node in enumerate(G):
+            x[n] = G.nodes[node][var0]
+            z[n] = G.nodes[node]['pos'][1]
+
+    if var1 == 'z':
+        for n, node in enumerate(G):
+            x[n] = G.nodes[node][var0]
+            z[n] = G.nodes[node]['pos'][0]
+
+    plt.plot(x, z, '.')
+
+
+
+
+
+def plot_compare_graphs(G, H):
+    """ Plot two graphs for comparison
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    H : nx.graph
+        Graph 
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
+    fig, ax = plt.subplots(2, 1)
+    plot_components(G, ax[0])
+    plot_components(H, ax[1])
 
 
 
@@ -299,49 +537,31 @@ def plot_attribute(
 
 
 
-def plot_edge_attribute(G, attribute, ax=[]):
-
-    if ax == []:
-        fig, ax = plt.subplots()
-
-    nx.draw(G,
-            pos=nx.get_node_attributes(G, 'pos'),
-            node_size=0.001,
-            ax=ax)
-
-    nx.draw_networkx_edges(G,
-                           pos=nx.get_node_attributes(G, 'pos'),
-                           edge_color=np.array(
-                               [G.edges[edge][attribute] for edge in G.edges]),
-                           edge_cmap=plt.cm.twilight_shifted,
-                           ax=ax)
-    ax.axis('equal')
-
-    # Colorbar
-    cmap = plt.cm.twilight_shifted
-    vmax = metrics.max_value_edges(G, attribute)
-    vmin = metrics.min_value_edges(G, attribute)
-
-    sm = plt.cm.ScalarMappable(
-        cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
-    sm.set_array([])
-
-    cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
-    cbar.ax.set_ylabel(attribute, rotation=270)
 
 
-
-
-
-
-
-
-
-
-
+#******************************************************************************
+# (3) Fault evolution plots
+# A couple of functions to visualize fault network properties
+#******************************************************************************
 
 def plot_rose(G, ax=[]):
-
+    """ Plot rose diagram of fault network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    ax : plt axis
+        Axis      
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
     strikes = np.zeros(len(G.edges))
     lengths = np.zeros(len(G.edges))
 
@@ -382,168 +602,23 @@ def plot_rose(G, ax=[]):
 
 
 
-
-
-
-def cross_plot(G, var0, var1):
-
-    x = np.zeros(len(G.nodes))
-    z = np.zeros(len(G.nodes))
-
-    if var0 == 'x':
-        for n, node in enumerate(G):
-            x[n] = G.nodes[node]['pos'][1]
-            z[n] = G.nodes[node][var1]
-
-    if var0 == 'z':
-        for n, node in enumerate(G):
-            x[n] = G.nodes[node]['pos'][0]
-            z[n] = G.nodes[node][var1]
-
-    if var1 == 'x':
-        for n, node in enumerate(G):
-            x[n] = G.nodes[node][var0]
-            z[n] = G.nodes[node]['pos'][1]
-
-    if var1 == 'z':
-        for n, node in enumerate(G):
-            x[n] = G.nodes[node][var0]
-            z[n] = G.nodes[node]['pos'][0]
-
-    plt.plot(x, z, '.')
-
-
-
-
-
-
-
-def plot_matrix(matrix, rows, columns, threshold):
-
-    fig, ax = plt.subplots(1, 1, figsize=(12, 12))
-    ax.imshow(matrix, 'Blues_r')
-
-    ax.set_xticks(range(matrix.shape[1]))
-    ax.set_yticklabels(columns)
-    ax.set_yticks(range(matrix.shape[0]))
-    ax.set_yticklabels(rows)
-
-    ax.set_xlim(-0.5, matrix.shape[1]-0.5)
-    ax.set_ylim(-0.5, matrix.shape[0]-0.5)
-
-    # Loop over data dimensions and create text annotations.
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            if matrix[i, j] < threshold:
-                ax.text(
-                    j, i, round(matrix[i, j], 3),
-                    ha="center", va="center", color="r"
-                )
-            else:
-                ax.text(
-                    j, i, round(matrix[i, j], 3),
-                    ha="center", va="center", color="k"
-                )
-
-
-
-
-
-
-
-def plot_compare_graphs(G, H):
-    fig, ax = plt.subplots(2, 1)
-    plot_components(G, ax[0])
-    plot_components(H, ax[1])
-
-
-
-
-
-
-
-
-
-def plot_threshold(data, threshold, value, filename=False):
-
-    fig, axs = plt.subplots(2, 1, figsize=(15, 10))
-
-    # First plot
-    p0 = axs[0].imshow(data)
-
-    # Color bar locator
-    divider = make_axes_locatable(axs[0])
-    cax = divider.append_axes("right", size="3%", pad=0.15)
-    cb0 = fig.colorbar(p0, ax=axs[0], cax=cax)
-    cb0.ax.plot([-1, 1], [value]*2, 'r')
-
-    # Second plot
-    p1 = axs[1].imshow(threshold)
-
-    # Color bar locator
-    divider = make_axes_locatable(axs[1])
-    cax = divider.append_axes("right", size="3%", pad=0.15)
-    cb0 = fig.colorbar(p1, ax=axs[1], cax=cax)
-
-    if filename:
-        plt.savefig(filename)
-
-
-
-
-
-
-
-
-def plot_connections(matrix, rows, columns):
-    for n in range(100):
-        threshold = n/100
-        connections = edits.similarity_to_connection(
-            matrix, rows, columns, threshold)
-        plt.scatter(threshold, len(connections), c='red')
-        plt.xlabel('Threshold')
-        plt.ylabel('Number of connections')
-
-
-
-
-
-
-
-
-
-
-
-
-def plot_location(log, name, ax=[], title=[]):
-
-    colors = utils.get_colors()
-
-    cm = LinearSegmentedColormap.from_list(
-        'something', colors, N=colors.shape[0])
-
-    ax.imshow(log, aspect='auto', alpha=0.75, cmap=cm)
-    ax.set_xlabel('Time [10^6 yrs]')
-    ax.set_yticks([1000, 2250, 3500])
-    ax.set_yticklabels([125, 0, -125])
-    ax.set_ylabel(name)
-    ax.set_title(title)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def bar_plot(attribute, faults, times, steps=[], ax=[]):
-
+    """ Bar plot of fault network attribute
+    
+    Parameters
+    ----------
+    attribute : np.array
+        Attribute to plot
+    faults : np.array
+        Fault labels
+    times : np.array
+        Times used for plotting
+    
+    Returns
+    -------  
+    """
+    
+    # Plotting
     colors = utils.get_colors()
 
     if ax == []:
@@ -567,18 +642,23 @@ def bar_plot(attribute, faults, times, steps=[], ax=[]):
 
 
 
-
-
-
-
-
-
-
-
-
-
 def stack_plot(attribute, faults, times, steps=[], ax=[]):
-
+    """ Stack plot of fault network attribute
+    
+    Parameters
+    ----------
+    attribute : np.array
+        Attribute to plot
+    faults : np.array
+        Fault labels
+    times : np.array
+        Times used for plotting
+    
+    Returns
+    -------  
+    """
+    
+    # Plotting
     colors = utils.get_colors()
 
     if ax == []:
@@ -607,18 +687,30 @@ def stack_plot(attribute, faults, times, steps=[], ax=[]):
 
 
 
-
-
-
-
-
-
-
-
-
-
 def plot_width(G, ax, width, tips=True, plot=False):
-
+    """ Plot edge width of fault network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    ax : plt axis
+        Axis
+    width : np.array
+        Width of network edges
+    tips : bolean
+        Plot tips
+    plot : False
+        Plot helper functions
+    
+    Returns
+    -------  
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
+    
+    # Plotting
     pos = nx.get_node_attributes(G, 'pos')
 
     n_comp = 10000
@@ -828,3 +920,94 @@ def plot_width(G, ax, width, tips=True, plot=False):
 
     ax.axis('equal')
     plt.show()
+
+
+
+
+
+
+
+#******************************************************************************
+# (4) Helper plots
+# A couple of functions to visualize a few other properties
+#******************************************************************************
+
+
+
+def plot_matrix(matrix, rows, columns, threshold):
+    """ Plot similarity matrix
+    
+    Parameters
+    ----------
+    matrix : np.array
+        Matrix to plot
+    rows : np.array
+        Rows
+    columns : np.array
+        Columns
+    threshold : float
+        Threshold
+        
+    Returns
+    -------  
+    """
+    
+    # Plotting
+    fig, ax = plt.subplots(1, 1, figsize=(12, 12))
+    ax.imshow(matrix, 'Blues_r')
+
+    ax.set_xticks(range(matrix.shape[1]))
+    ax.set_yticklabels(columns)
+    ax.set_yticks(range(matrix.shape[0]))
+    ax.set_yticklabels(rows)
+
+    ax.set_xlim(-0.5, matrix.shape[1]-0.5)
+    ax.set_ylim(-0.5, matrix.shape[0]-0.5)
+
+    # Loop over data dimensions and create text annotations.
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            if matrix[i, j] < threshold:
+                ax.text(
+                    j, i, round(matrix[i, j], 3),
+                    ha="center", va="center", color="r"
+                )
+            else:
+                ax.text(
+                    j, i, round(matrix[i, j], 3),
+                    ha="center", va="center", color="k"
+                )
+
+
+
+
+
+def plot_connections(matrix, rows, columns):
+    """ Plot connections
+    
+    Parameters
+    ----------
+    matrix : np.array
+        Matrix to plot
+    rows : np.array
+        Rows
+    columns : np.array
+        Columns
+        
+    Returns
+    -------  
+    """
+    
+    # Plotting
+    for n in range(100):
+        threshold = n/100
+        connections = edits.similarity_to_connection(
+            matrix, rows, columns, threshold)
+        plt.scatter(threshold, len(connections), c='red')
+        plt.xlabel('Threshold')
+        plt.ylabel('Number of connections')
+        
+        
+        
+
+

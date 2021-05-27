@@ -388,36 +388,68 @@ def calculate_dip(G, to_nodes=False):
 
 
 
-
-
-
-
-
-
-
-
 def strike_between_nodes(G, n0, n1):
+    """ Compute strike between two nodes
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    n0: int
+        Node 0
+    n1 : int
+        Node 1
+        
+    Returns
+    -------  
+    value : float
+        Strike between two nodes
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    # Calculation    
     x0 = G.nodes[n0]['pos'][0]
     x1 = G.nodes[n1]['pos'][0]
     y0 = G.nodes[n0]['pos'][1]
     y1 = G.nodes[n1]['pos'][1]
     
     if (x1-x0)<0:
-      strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
+        strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
     else:
-      strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
+        strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
     
     #Scale to [0, 180]
     if strike<=180:
-      return strike
+        return strike
     else:
-      return strike - 180
+        return strike - 180
 
 
 
 
 
 def nodes_of_max_dist(G, nodes):
+    """ Compute pair of nodes which are furthest apart
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    nodes: list
+        List of nodes
+        
+    Returns
+    -------  
+    pair : tuple
+        Tuple of nodes
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    # Calculation 
     if len(nodes) < 2:
         print('Only 2 nodes in neighborhood')
         return
@@ -429,13 +461,32 @@ def nodes_of_max_dist(G, nodes):
             if d > threshold:
                 threshold = d
                 pair = (n0, n1)
+                
     return pair
 
 
 
 
-
 def calculate_strikes_in_radius(G, radius=10):
+    """ Compute pair of nodes which are furthest apart
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    radius: int, float
+        Radius to calculate strike in
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph containing edges
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    # Calculation 
     N = nx.number_of_nodes(G)
     for node in G:
         G.nodes[node]['strike'] = float("nan")
@@ -451,34 +502,70 @@ def calculate_strikes_in_radius(G, radius=10):
     return G
 
 
-def new_nodes_of_max_dist(G, nodes):
-    """ Strike in neighborhood calculation """
+
+
+def nodes_of_max_dist_2(G, nodes):
+    """ Compute pair of nodes which are furthest apart
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    nodes: list
+        List of nodes
+        
+    Returns
+    -------  
+    pair : tuple
+        Tuple of nodes
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    # Calculation   
     threshold = 0
     for n0 in nodes:
         for n1 in nodes:
-            d = nx.shortest_path_length(
-                G, source=n0, target=n1, weight='length'
-            )
-
+            d = nx.shortest_path_length(G, source=n0, target=n1, weight='length')
             if d > threshold:
                 threshold = d
                 pair = (n0, n1)
     return pair
 
 
+
+
 def calculate_strikes_in_neighborhood(G, neighbors=3):
+    """ Compute pair of nodes in neighborhood
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    neighbors: int
+        Number of neighbors to include in calculation
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph containing edges
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    # Calculation
     for cc in sorted(nx.connected_components(G)):
         for node in cc:
 
             G_cc = G.subgraph(cc)
 
-            dict_neighbors = nx.single_source_shortest_path_length(
-                G_cc, node, cutoff=neighbors
-            )
+            dict_neighbors = nx.single_source_shortest_path_length(G_cc, node, cutoff=neighbors)
 
             list_of_nodes = [x for x in dict_neighbors]
 
-            (nA, nB) = new_nodes_of_max_dist(G, list_of_nodes)
+            (nA, nB) = nodes_of_max_dist_2(G, list_of_nodes)
 
             G.nodes[node]['strike'] = strike_between_nodes(G, nA, nB)
 
@@ -492,23 +579,8 @@ def calculate_strikes_in_neighborhood(G, neighbors=3):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #******************************************************************************
-# (2) COMPONENT METRICS
+# (3) COMPONENT METRICS
 # A couple of functions to calculate attributes of components
 #******************************************************************************
 
@@ -532,6 +604,7 @@ def get_component_labels(G):
 
 
 
+
 def number_of_components(G):
     """ Count the number of components
     
@@ -549,6 +622,7 @@ def number_of_components(G):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
     
     return len(nx.connected_components(G))
+
 
 
 
@@ -606,15 +680,24 @@ def compute_component_node_values(G, attribute, mode):
 
 
 
-
-
-
-
-
-
-
-
 def component_lengths(G):
+    """ Calculate lengths of components
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph contraining nodes
+        
+    Returns
+    -------  
+    array
+        Float
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'     
+
+    # Calculation
     values = np.zeros((number_of_components(G)))
     for m, cc in enumerate(sorted(nx.connected_components(G))):
         G_sub = G.copy()
@@ -624,11 +707,6 @@ def component_lengths(G):
             length = length + G_sub.edges[edge]['length']
         values[m] = length
     return values
-
-
-
-
-
 
 
 
@@ -648,7 +726,7 @@ def get_fault_labels(G):
     Parameters
     ----------
     G : nx.graph
-        Graph contraining nodes
+        Fault network
         
     Returns
     -------  
@@ -676,7 +754,7 @@ def number_of_faults(G):
     Parameters
     ----------
     G : nx.graph
-        Graph contraining nodes
+        Fault network
         
     Returns
     -------  
@@ -697,7 +775,7 @@ def get_fault(G, n):
     Parameters
     ----------
     G : nx.graph
-        Graph contraining nodes
+        Fault network
         
     n : int
         Fault number
@@ -721,7 +799,7 @@ def fault_lengths(G):
     Parameters
     ----------
     G : nx.graph
-        Graph contraining nodes
+        Fault network
         
     Returns
     -------  
@@ -750,7 +828,7 @@ def compute_fault_values(G, attribute, mode):
     Parameters
     ----------
     G : nx.graph
-        Graph contraining nodes
+        Fault network
     attribute : string
         Node attribute used for calculation
     mode: string
@@ -800,8 +878,6 @@ def compute_fault_values(G, attribute, mode):
 
 
 
-
-
 #******************************************************************************
 # (5) NETWORK METRICS
 # A couple of functions to calculate network properties
@@ -813,7 +889,7 @@ def total_length(G):
     Parameters
     ----------
     G : nx.graph
-        Graph contraining nodes
+        Fault network
         
     Returns
     -------  
@@ -836,37 +912,72 @@ def total_length(G):
 
 
 
+def extract_attribute(G, arr, attribute):
+    """ Extract attribute from image to network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    arr : np.array
+        Array to extract attribute from
+    attribute : string
+        Name of attribute assigned to network
+    
+    Returns
+    -------  
+    G
+        nx.graph
+    """
 
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert isinstance(arr, np.array), 'arr is not a NumPy array'    
+    assert isinstance(attribute, str), 'Name of attribute is not a string'
 
-
-
-
-
-def extract_attribute(G, image, name):
-    """ Extract Values From Image """
-    (x_max, y_max) = image.shape
+    # Calculation    
+    (x_max, y_max) = arr.shape
     for node in G:
         y, x = G.nodes[node]['pos']
         if (x >= x_max) or (y >= y_max):
-            G.nodes[node][name] = float('nan')
+            G.nodes[node][attribute] = float('nan')
         else:
-            G.nodes[node][name] = image[int(x), int(y)]
+            G.nodes[node][attribute] = arr[int(x), int(y)]
     return G
 
 
 
 
+def extract_profile(G, attribute):
+    """ Extract profile from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    attribute : string
+        Name of attribute assigned to network
+    
+    Returns
+    -------  
+    array, array
+        np.array, np.array
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert isinstance(attribute, str), 'Name of attribute is not a string'
 
-
-def strain_profile(G, attribute):
-    """ Extract Strain Profile From Network """
+    # Calculation   
     y = np.zeros(len(G.nodes))
-    strain_rate = np.zeros(len(G.nodes))
+    values = np.zeros(len(G.nodes))
 
+    # Get values
     for n, node in enumerate(G):
         y[n] = G.nodes[node]['pos'][1]
-        strain_rate[n] = G.nodes[node][attribute]
+        values[n] = G.nodes[node][attribute]
 
+    # Resample
     y_min = np.min(y)
     y_max = np.max(y)
     y_resample = np.arange(y_min, y_max)
@@ -875,31 +986,37 @@ def strain_profile(G, attribute):
         index = np.where(y == y_n)[0]
         return np.max(attribute[index])
 
-    strain_rate_resample = np.zeros_like(y_resample)
+    values_resample = np.zeros_like(y_resample)
     for n, y_n in enumerate(y_resample):
-        strain_rate_resample[n] = find_max_y(y, y_n, strain_rate)
+        values_resample[n] = find_max_y(y, y_n, values)
 
-    return y_resample, strain_rate_resample
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return y_resample, values_resample
 
 
 
 
 
 def calculate_edge_mid_point(G, edge):
-    # point locations
+    """ Calculate mid point of edge
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    edge : tuple
+        Edge in network
+    
+    Returns
+    -------  
+    array, array
+        np.array, np.array
+    """    
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert isinstance(edge, tuple), 'Edge is not a tuple'
+
+    # Calculation       
     x = int((G.nodes[edge[0]]['pos'][0] + G.nodes[edge[1]]['pos'][0])/2)
     y = int((G.nodes[edge[0]]['pos'][1] + G.nodes[edge[1]]['pos'][1])/2)
 
@@ -909,12 +1026,27 @@ def calculate_edge_mid_point(G, edge):
 
 
 
-
 def calculate_mid_points(G):
+    """ Calculate mid points of network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    
+    Returns
+    -------  
+    H
+        nx.graph
+    """   
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+
+    # Calculation  
     H = nx.Graph()
 
     for edge in G.edges:
-
         node = (edge)
         H.add_node(node)
         H.nodes[node]['pos'] = calculate_edge_mid_point(G, edge)
@@ -927,13 +1059,31 @@ def calculate_mid_points(G):
 
 
 def calculate_direction(G, cutoff, normalize=True):
+    """ Calculate direction for entire network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    cutoff : int, float
+        Cutoff distance for direction
+    normalize : bolean
+        Normalize direction (default: True)
+    
+    Returns
+    -------  
+    G
+        nx.graph
+    """   
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+
+    # Calculation
     for node in G.nodes:
 
         length = nx.single_source_shortest_path_length(G, node, cutoff=cutoff)
-        keys = [
-            keys for keys, values in length.items()
-            if values == max(length.values())
-        ]
+        keys = [keys for keys, values in length.items() if values == max(length.values())]
 
         if len(keys) > 2:
             (node_0, node_1) = keys[:2]
@@ -943,13 +1093,8 @@ def calculate_direction(G, cutoff, normalize=True):
         if len(keys) == 1:
             node_0 = keys[0]
 
-            length = nx.single_source_shortest_path_length(
-                G, node, cutoff=cutoff - 1
-            )
-            keys = [
-                keys for keys, values in length.items()
-                if values == max(length.values())
-            ]
+            length = nx.single_source_shortest_path_length(G, node, cutoff=cutoff - 1)
+            keys = [keys for keys, values in length.items() if values == max(length.values())]
 
             node_1 = keys[0]
 
@@ -970,8 +1115,26 @@ def calculate_direction(G, cutoff, normalize=True):
 
 
 
+def generate_pickup_points(G, factor):
+    """ Generate pick up points for network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    factor : int, float
+        Factor for distance of pick up points from fault
+    
+    Returns
+    -------  
+    H
+        nx.graph
+    """ 
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
 
-def calculate_pickup_points(G, factor):
+    # Calculation
     H = nx.Graph()
 
     for node in G.nodes:
@@ -1010,7 +1173,28 @@ def calculate_pickup_points(G, factor):
     return H
 
 
+
+
 def filter_pickup_points(G, H):
+    """ Filter pick up points
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    H : nx.graph
+        Pick up points
+    
+    Returns
+    -------  
+    H
+        nx.graph
+    """ 
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+
+    # Calculation
     for node in G:
 
         if (
@@ -1030,7 +1214,31 @@ def filter_pickup_points(G, H):
     return H
 
 
+
+
 def calculate_slip_rate(G, H, dim):
+    """ Calculate slip rate from pick up points
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    H : nx.graph
+        Pick up points
+    dim : int
+        Dimension of network
+    
+    Returns
+    -------  
+    G
+        nx.graph
+    """ 
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert isinstance(H, nx.Graph), 'H is not a NetworkX graph'
+
+    # Calculation
     if dim == 2:
         for node in H.nodes:
             if node[1] == 0:  # centre point
@@ -1090,7 +1298,34 @@ def calculate_slip_rate(G, H, dim):
     return G
 
 
+
+
+
 def calculate_slip(G, H, dt, dim):
+    """ Calculate slip from pick up points
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    H : nx.graph
+        Pick up points
+    dt : float
+        Time step
+    dim : int
+        Dimension of network
+    
+    Returns
+    -------  
+    G
+        nx.graph
+    """ 
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert isinstance(H, nx.Graph), 'H is not a NetworkX graph'
+
+    # Calculation
     if dim == 2:
         for node in H.nodes:
             if node[1] == 0:

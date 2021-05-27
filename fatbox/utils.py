@@ -11,27 +11,23 @@ from itertools import count
 # This file contains a series of utility functions
 #==============================================================================
 
-
-
-
-
-
-
-
-def get_attribute(G, name):
-    highest_node = max(list(G.nodes))+1
-    attribute = [0]*(highest_node)
-    for node in G:
-        if name in G.nodes[node]:
-            attribute[node] = G.nodes[node][name]
-        else:
-            attribute[node] = 1e6
-    return attribute
-
-
 def get_times(filename):
-    """ Get times from statistics file """
-    # EXTRACT VARIABLE NAMES #
+    """ Get times from statistics file
+    
+    Parameters
+    ----------
+    filename : str
+        Path to statistics file (from ASPECT)
+    fx : float
+    fy : float
+    
+    Returns
+    -------  
+    array : array
+        Times
+    """
+    
+    # Extract variables
     # read entire file and store each line
     with open(filename) as f:
         header = f.readlines()
@@ -59,6 +55,21 @@ def get_times(filename):
 
 
 def get_colors():
+    """ Get times from statistics file
+    
+    Parameters
+    ----------
+    filename : str
+        Path to statistics file (from ASPECT)
+    fx : float
+    fy : float
+    
+    Returns
+    -------  
+    array : array
+        Times
+    """
+    
     n_comp = 1000
     palette = sns.color_palette(None, 2*n_comp)
     node_color = np.ones((2*n_comp, 4))
@@ -70,8 +81,25 @@ def get_colors():
 
 
 def get_labels(G, attribute):
-    """ Get labels for plotting node attributes """
-    # get unique groups
+    """ Get labels for plotting node attributes
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Node attribute
+    
+    Returns
+    -------  
+    array : array
+        Colors
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"   
+
+    # Get unique groups
     groups = set(nx.get_node_attributes(G, attribute).values())
     mapping = dict(zip(sorted(groups), count()))
     nodes = G.nodes()
@@ -84,7 +112,25 @@ def get_labels(G, attribute):
 
 
 def get_edge_labels(G, attribute):
-    """ Get labels for plotting edge attributes """
+    """ Get labels for plotting edge attributes
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+        
+    attribute : str
+        Edge attribute    
+        
+    Returns
+    -------  
+    array : np.array
+        Colors
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"   
+
     # get unique groups
     groups = set(nx.get_edge_attributes(G, attribute).values())
     mapping = dict(zip(sorted(groups), count()))
@@ -93,25 +139,23 @@ def get_edge_labels(G, attribute):
     return np.array(colors)
 
 
-def merge(G, H):
-    N = len(G.nodes)
 
-    for node in H.nodes:
-        G.add_node(node+N)
-        G.nodes[node+N]['pos'] = H.nodes[node]['pos']
-        G.nodes[node+N]['x'] = H.nodes[node]['x']
-        G.nodes[node+N]['y'] = H.nodes[node]['y']
-        G.nodes[node+N]['z'] = H.nodes[node]['z']
-        G.nodes[node+N]['edges'] = H.nodes[node]['edges']
-        G.nodes[node+N]['component'] = H.nodes[node]['component']
-
-    for edge in H.edges:
-        G.add_edge(edge[0]+N, edge[1]+N)
-
-    return G
 
 
 def topo_line(data):
+    """ Get topography from 2-D ASPECT model
+    
+    Parameters
+    ----------
+    array : np.array
+        Model outpout
+                
+    Returns
+    -------  
+    line : np.array
+        Model outpout
+    """
+    
     col = data.shape[1]
     line = np.zeros(col)
     for n in range(col):
@@ -122,7 +166,23 @@ def topo_line(data):
     return line.astype(int)
 
 
+
+
+
 def bottom_line(data, threshold):
+    """ Get bottom line from 2-D ASPECT model
+    
+    Parameters
+    ----------
+    array : np.array
+        Model outpout
+                
+    Returns
+    -------  
+    line : np.array
+        Model outpout
+    """
+
     col = data.shape[1]
     line = np.zeros(col)
     for n in range(col):
@@ -138,19 +198,25 @@ def bottom_line(data, threshold):
 
 
 
-def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
-    """
-    Store points and/or graphs as vtkPolyData or vtkUnstructuredGrid.
-    Required argument:
-    - nodeCoords is a list of node coordinates in the format [x,y,z]
-    Optional arguments:
-    - G is Networkx graph
-    - name/name2 is the scalar's name
-    - power/power2 = 1 for r~scalars, 0.333 for V~scalars
-    - nodeLabel is a list of node labels
-    - method = 'vtkPolyData' or 'vtkUnstructuredGrid'
-    - fileout is the output file name (will be given .vtp or .vtu extension)
-    """
+def save_network_for_paraview(G, attributes, nodeLabel=[], fileout='test'):
+    """ Save a network in a format readable by ParaView (i.e. vtp - vtkPolyData)
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attributes : list
+        List attributes to write in vtp file
+    nodeLabel : list
+        List of node labels
+    fileout : str
+        Name of output file
+                
+    Returns
+    -------  
+
+    """    
+    
 
     highest_node = max(list(G.nodes))+1
 
@@ -161,14 +227,14 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
         coordinates[node, 1] = G.nodes[node]['y']
         coordinates[node, 2] = G.nodes[node]['z']
 
-    def generate_points2():
+    def generate_points():
         for row in coordinates:
             if row[0] == 0 and row[1] == 0 and row[2] == 0:
                 yield list([float("nan"), float("nan"), float("nan")])
             else:
                 yield list(row)
 
-    nodeCoords = generate_points2()
+    nodeCoords = generate_points()
 
     points = vtk.vtkPoints()
     for node in nodeCoords:
@@ -190,6 +256,21 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
     if edges:
         polydata.SetLines(line)
 
+
+
+    def get_attribute(G, name):
+        highest_node = max(list(G.nodes))+1
+        attribute = [0]*(highest_node)
+        for node in G:
+            if name in G.nodes[node]:
+                attribute[node] = G.nodes[node][name]
+            else:
+                attribute[node] = 1e6
+        return attribute
+
+
+
+
     for a in attributes:
         scalar = get_attribute(G, a)
 
@@ -199,7 +280,7 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
         attribute.SetNumberOfTuples(len(scalar))
         # i becomes 0, 1, 2,..., and j runs through scalars
         for i, j in enumerate(scalar):
-            attribute.SetValue(i, j**power)
+            attribute.SetValue(i, j)
 
         polydata.GetPointData().AddArray(attribute)
 
@@ -229,6 +310,7 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
     #     polydata.GetPointData().AddArray(attribute3)
     if nodeLabel:
         polydata.GetPointData().AddArray(label)  # label is undefined
+        
     writer = vtk.vtkXMLPolyDataWriter()
     writer.SetFileName(fileout+'.vtp')
     writer.SetInputData(polydata)
@@ -240,30 +322,3 @@ def writeObjects(G, attributes, power=1, nodeLabel=[], fileout='test'):
 
 
 
-
-
-
-
-def func_linear(x, a, b):
-    return a*x + b
-
-
-def func_powerlaw(x, a, b):
-    return a*x**(-b)
-
-
-def func_exponential(x, a, b):
-    return a*np.exp(-b*x)
-
-
-def metrics(x, y, y_pred):
-    # Residuals
-    residuals = y - y_pred
-    # Residual sum of squares
-    ss_res = np.sum(residuals**2)
-    # Residual total sum of squares
-    ss_tot = np.sum((y-np.mean(y))**2)
-    # R^2
-    R2 = 1 - (ss_res / ss_tot)
-
-    return R2
