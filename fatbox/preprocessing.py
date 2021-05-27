@@ -6,7 +6,7 @@ import numpy as np
 from skimage.morphology import skeletonize
 
 # Custom package
-import cv_algorithms
+# import cv_algorithms
 
 
 
