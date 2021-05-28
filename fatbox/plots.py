@@ -10,7 +10,7 @@ from matplotlib.patches import Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import seaborn as sns
 from PIL import Image
-
+from fatbox import metrics
 #==============================================================================
 # This file contains a series of function to plot fault networks (graphs). 
 # This includes functions for plotting: 
@@ -443,8 +443,8 @@ def plot_edge_attribute(G, attribute, ax=[]):
 
     # Colorbar
     cmap = plt.cm.twilight_shifted
-    vmax = metrics.max_value_edges(G, attribute)
-    vmin = metrics.min_value_edges(G, attribute)
+    vmax = metrics.compute_edge_values(G, attribute, 'max')
+    vmin = metrics.compute_edge_values(G, attribute, 'min')
 
     sm = plt.cm.ScalarMappable(
         cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
