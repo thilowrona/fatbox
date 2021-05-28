@@ -369,10 +369,10 @@ def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, filename=
         fig, ax = plt.subplots()
 
     if vmin == []:
-        vmin = metrics.min_value_nodes(G, attribute)
+        vmin = metrics.compute_node_values(G, attribute, 'min')
 
     if vmax == []:
-        vmax = metrics.max_value_nodes(G, attribute)
+        vmax = metrics.compute_node_values(G, attribute, 'max')
 
 
     # Colorbar
