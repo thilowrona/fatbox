@@ -42,11 +42,16 @@ def get_times(filename):
     # EXTRACT DATA
     df = pd.read_csv(filename, comment='#', header=None, delim_whitespace=True)
 
+    # Find index of column containing output files
+    for col in range(df.shape[1]):
+        if df[col][0] == 'output/solution/solution-00000':
+            index = col
+
     # EXTRACT TIMES
-    times = []
-    for i in range(df.shape[0]):
-        if pd.notnull(df.iloc[i, 27]):
-            times.append(df.iloc[i, 1])
+    times = []    
+    for n in range(df.shape[0]):           
+        if pd.notnull(df.iloc[n,index]):
+            times.append(df.iloc[n,1])
 
     return np.array(times)
 
