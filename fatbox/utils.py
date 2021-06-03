@@ -44,8 +44,8 @@ def get_times(filename):
 
     # Find index of column containing output files
     for col in range(df.shape[1]):
-        if df[col][0] == 'output/solution/solution-00000':
-            index = col
+        if 'solution/solution-00000' in str(df[col][0]):
+            index = col 
 
     # EXTRACT TIMES
     times = []    
