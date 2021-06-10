@@ -68,6 +68,38 @@ def get_node_colors(G, attribute):
 
 
 
+def get_edge_colors(G, attribute):
+    """ Get edge colors for plotting
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Attribute name
+    
+    Returns
+    -------  
+    array : array
+        Node colors
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
+
+    # Calculation
+    n_comp = 10000
+    palette = sns.color_palette(None, 2*n_comp)
+    edge_color = np.zeros((len(G.edges), 3))
+
+    for n, edge in enumerate(G.edges):
+        color = palette[G.edges[edge][attribute]]
+        edge_color[n, 0] = color[0]
+        edge_color[n, 1] = color[1]
+        edge_color[n, 2] = color[2]
+
+    return edge_color
+
 
 #******************************************************************************
 # (2) Array plotting
