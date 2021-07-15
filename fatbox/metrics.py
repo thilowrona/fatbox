@@ -140,7 +140,29 @@ def distance_between_nodes(G, n0, n1, mode='pos'):
 
 
 
-
+# Calculate polarity
+def calculate_polarity(G):
+    for cc in nx.connected_components(G):
+        maximum = 0
+        minimum = 1e6
+        for node in cc:
+            y_value = G.nodes[node]['y']
+            
+            if y_value < minimum:
+                min_y = node
+                minimum = y_value
+                
+            if y_value > maximum:
+                max_y = node
+                maximum = y_value
+                
+        if G.nodes[min_y]['x'] <= G.nodes[max_y]['x']:
+            for node in cc:
+                G.nodes[node]['polarity'] = 1
+        else:
+            for node in cc:
+                G.nodes[node]['polarity'] =-1    
+    return G
 
 
 
