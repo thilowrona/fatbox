@@ -243,50 +243,37 @@ def find_new_neighbors(G, neighbors, origins):
 
 
 
-def split_triple_junctions(G, dos, plot=False):
-    """ This function splits up triple junctions (or y-nodes) based on their 
-    orientation, so that the two branches most closely aligned remain
-    connected and the splay is cut off.
+def split_triple_junctions(G, dos, split='minimum', threshold = 20, plot=False):
+    # This function splits up triple junctions (or y-nodes) based on their 
+    # orientation, so that the two branches most closely aligned remain
+    # connected and the splay is cut off.
+    # 
+    # Parameters
+    # ---------------------------------------------------------------------
+    # dos - depth of search or the number of nodes used to determine the 
+    # orientation of each branch
+    import matplotlib.pyplot as plt
     
-    Parameters
-    ----------
-    G : nx.graph
-        Graph
-    dos : int
-        Depth of search (i.e. distance from junction)
-    plot : bolean
-        Plot triple junctions (default: False)
-    
-    Returns
-    -------  
-    G : nx.graph
-        Graph
-    """     
-
-    # Assertions
-    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
-
-    # Calculation     
-    count = 0
-
+    count = 0 
+        
     for node in G:
         if G.degree[node] == 3:     # Find y-node
-
+            
             count = count+1         # Increase counter
-
+            
             true_neighbors = list(G.neighbors(node))    # Find 1st neighbors
-
+            
             # Set up branches, i.e. list of nodes belonging to each
             # (rgb refers to the colors when plotting)
-            branch_r = [true_neighbors[0]]
-            branch_g = [true_neighbors[1]]
-            branch_b = [true_neighbors[2]]
-
-            # Set up set of eadges belonging to each branch
+            branch_r = [node, true_neighbors[0]]
+            branch_g = [node, true_neighbors[1]]
+            branch_b = [node, true_neighbors[2]]
+            
+            # Set up set of eadges belonging to each branch                        
             edges_r = {(node, true_neighbors[0])}
             edges_g = {(node, true_neighbors[1])}
             edges_b = {(node, true_neighbors[2])}
-
+            
             # Extract branches - it starts with the y-node (i.e. node) as
             # origins and the true neighbors as neighbors. Then we search
             # for the neighbors' neighbors (i.e. new_neighbors) ignoring
@@ -295,22 +282,23 @@ def split_triple_junctions(G, dos, plot=False):
             # one level deeper.
             origins = [node]*3
             neighbors = true_neighbors
-
-            for _ in range(dos):
+            
+            for n in range(dos):                     
                 new_neighbors = find_new_neighbors(G, neighbors, origins)
-                origins = neighbors
+                origins   = neighbors
                 neighbors = new_neighbors
-
+                
                 # Add new neigbors to branch, if they're not already are
-                if new_neighbors[0] not in branch_r:
+                if new_neighbors[0] not in branch_r:                
                     branch_r.append(new_neighbors[0])
-
-                if new_neighbors[1] not in branch_g:
-                    branch_g.append(new_neighbors[1])
-
-                if new_neighbors[2] not in branch_b:
+                    
+                if new_neighbors[1] not in branch_g:                
+                    branch_g.append(new_neighbors[1])  
+                    
+                if new_neighbors[2] not in branch_b:                
                     branch_b.append(new_neighbors[2])
-
+                    
+    
                 # Add new edges to set of edges, unless they're self-edges
                 if origins[0] != neighbors[0]:
                     edges_r.add((origins[0], neighbors[0]))
@@ -318,209 +306,265 @@ def split_triple_junctions(G, dos, plot=False):
                     edges_g.add((origins[1], neighbors[1]))
                 if origins[2] != neighbors[2]:
                     edges_b.add((origins[2], neighbors[2]))
-
+                
+                
             # Plot y-nodes with edges
             if plot:
-
-                plt.figure(figsize=(12, 12))
-
-                nx.draw_networkx_nodes(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    nodelist=[node],
-                    node_color="yellow"
-                )
-
-                nx.draw_networkx_nodes(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    nodelist=branch_r,
-                    node_color="red"
-                )
-
-                nx.draw_networkx_edges(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    edgelist=edges_r,
-                    edge_color="red"
-                )
-
-                nx.draw_networkx_nodes(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    nodelist=branch_g,
-                    node_color="green"
-                )
-
-                nx.draw_networkx_edges(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    edgelist=edges_g,
-                    edge_color="green"
-                )
-
-                nx.draw_networkx_nodes(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    nodelist=branch_b,
-                    node_color="blue"
-                )
-
-                nx.draw_networkx_edges(
-                    G,
-                    pos=nx.get_node_attributes(G, 'pos'),
-                    edgelist=edges_b,
-                    edge_color="blue"
-                )
-
+                
+                plt.figure(figsize=(12,12))
+            
+                nx.draw_networkx_nodes(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       nodelist=[node],
+                                       node_color="yellow")
+                    
+                nx.draw_networkx_nodes(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       nodelist=branch_r,
+                                       node_color="red")
+                
+                nx.draw_networkx_edges(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       edgelist=edges_r,
+                                       edge_color="red")
+                
+                nx.draw_networkx_nodes(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       nodelist=branch_g,
+                                       node_color="green")
+                
+                nx.draw_networkx_edges(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       edgelist=edges_g,
+                                       edge_color="green")
+                
+                nx.draw_networkx_nodes(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       nodelist=branch_b,
+                                       node_color="blue")
+                
+                nx.draw_networkx_edges(G, 
+                                       pos = nx.get_node_attributes(G, 'pos'),
+                                       edgelist=edges_b,
+                                       edge_color="blue")
+                
                 plt.axis('equal')
-
+                
+                            
+            
+            
             # Calculate slope of each branch
             def slope(G, nodes):
-
+                
                 x = [G.nodes[node]['pos'][0] for node in nodes]
                 y = [G.nodes[node]['pos'][1] for node in nodes]
-
+                
                 dx = x[0]-x[-1]
                 dy = y[0]-y[-1]
-
+                
                 # If point cloud is vertical
                 if abs(dy/dx) > 8:
                     slope = 1e16
                     x_pred = np.ones_like(x)*np.mean(x)
-                    y_pred = y
-
+                    y_pred = y                   
+                    
                 # If point cloud is 'normal', fit linear function
                 else:
                     slope = dy/dx
                     intercept = y[0]-dy/dx*x[0]
                     x_pred = x
                     y_pred = [slope*xn + intercept for xn in x_pred]
-
+                  
                 return x_pred, y_pred, slope
-
+                
+            
             x_r, y_r, slope_r = slope(G, branch_r)
-            x_g, y_g, slope_g = slope(G, branch_g)
+            x_g, y_g, slope_g = slope(G, branch_g) 
             x_b, y_b, slope_b = slope(G, branch_b)
-
-            # Convert slopes to angles
+            
+                            
+            # Convert slopes to angles              
             angle_r = np.degrees(np.arctan(slope_r))
             angle_g = np.degrees(np.arctan(slope_g))
             angle_b = np.degrees(np.arctan(slope_b))
+            
 
+            
             # Plot linear approximation to check angles
-            if plot:
-                plt.plot(x_r, y_r, 'r', linewidth=2)
+            if plot:  
+                plt.plot(x_r, y_r, 'r', linewidth=2) 
                 plt.plot(x_g, y_g, 'g', linewidth=2)
                 plt.plot(x_b, y_b, 'b', linewidth=2)
-
+            
+            
             # Calculate differences in angles (from -180 to +180 degrees)
-            def differnce_between_angles(a0, a1):
-                return abs((((2*a1-2*a0+540) % 360)-180)/2)
-
+            def differnce_between_angles(a0,a1):
+                	return abs((((2*a1-2*a0+540)%360)-180)/2)
+            
             diff_rg = differnce_between_angles(angle_r, angle_g)
             diff_rb = differnce_between_angles(angle_r, angle_b)
             diff_gb = differnce_between_angles(angle_g, angle_b)
-
+            
+            
             # Plot angles and differences as figure title
             if plot:
-                plt.suptitle(
-                    'Angles: Red: %i, Green: %i, Blue: %i' %
-                    (angle_r, angle_g, angle_b)
-                )
+                plt.suptitle('Angles: Red: '     + str(round(angle_r)) +
+                          ', Green: ' + str(round(angle_g)) +
+                          ', Blue: '  + str(round(angle_b)))
+                
+                plt.title(' Minimum difference: RG: ' + str(round(diff_rg)) +
+                          ', RB: ' + str(round(diff_rb)) +
+                          ', GB: ' + str(round(diff_gb)))
+            
+            
+            
+            if split=='minimum':
+                # Split y-node based on difference in angles
+                # If angle between red and green branch is smallest, remove 
+                # blue branch.
+                if diff_rg < diff_rb and diff_rg < diff_gb:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                    pos = nx.get_node_attributes(G, 'pos'),
+                                    edgelist=[(node, true_neighbors[2])],
+                                    edge_color="black",
+                                    width=10)
+                    G.remove_edge(node, true_neighbors[2])
+                    
+                # If angle between red and blue branch is lowest, remove green
+                # branch.
+                elif diff_rb < diff_rg and diff_rb < diff_gb:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                    pos = nx.get_node_attributes(G, 'pos'),
+                                    edgelist=[(node, true_neighbors[1])],
+                                    edge_color="black",
+                                    width=10)
+                    G.remove_edge(node, true_neighbors[1])
+                    
+                # If angle between green and blue brach is smallest (and all 
+                # equal cases), remove red branch.
+                else:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                pos = nx.get_node_attributes(G, 'pos'),
+                                edgelist=[(node, true_neighbors[0])],
+                                edge_color="black",
+                                width=10)
+                    G.remove_edge(node, true_neighbors[0])
+                
+                
+                
+                
+                
+                
+            
+            if split=='threshold':
+                # Split y-node based on difference in angles based on threshold
+                                
+                if diff_rg < threshold:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                            pos = nx.get_node_attributes(G, 'pos'),
+                                            edgelist=[(node, true_neighbors[2])],
+                                            edge_color="black",
+                                            width=10)
+                    G.remove_edge(node, true_neighbors[2])
+                        
+        
+                if diff_rb < threshold:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                            pos = nx.get_node_attributes(G, 'pos'),
+                                            edgelist=[(node, true_neighbors[1])],
+                                            edge_color="black",
+                                            width=10)
+                    G.remove_edge(node, true_neighbors[1])
+                    
+        
+                if diff_gb < threshold:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                            pos = nx.get_node_attributes(G, 'pos'),
+                                            edgelist=[(node, true_neighbors[0])],
+                                            edge_color="black",
+                                            width=10)
+                    G.remove_edge(node, true_neighbors[0])
+                    
+                    
 
-                plt.title(
-                    ' Minimum difference: RG: %i, RB: %i, GB: %i' %
-                    (diff_rg, diff_rb, diff_gb)
-                )
+                    
 
-            # Split y-node based on difference in angles
-            # If angle between red and green branch is smallest, remove
-            # blue branch.
-            if diff_rg < diff_rb and diff_rg < diff_gb:
-                if plot:
-                    nx.draw_networkx_edges(
-                        G,
-                        pos=nx.get_node_attributes(G, 'pos'),
-                        edgelist=[(node, true_neighbors[2])],
-                        edge_color="black",
-                        width=10
-                    )
-                G.remove_edge(node, true_neighbors[2])
-
-            # If angle between red and blue branch is lowest, remove green
-            # branch.
-            elif diff_rb < diff_rg and diff_rb < diff_gb:
-                if plot:
-                    nx.draw_networkx_edges(
-                        G,
-                        pos=nx.get_node_attributes(G, 'pos'),
-                        edgelist=[(node, true_neighbors[1])],
-                        edge_color="black",
-                        width=10
-                    )
-                G.remove_edge(node, true_neighbors[1])
-
-            # If angle between green and blue brach is smallest (and all
-            # equal cases), remove red branch.
-            else:
-                if plot:
-                    nx.draw_networkx_edges(
-                        G,
-                        pos=nx.get_node_attributes(G, 'pos'),
-                        edgelist=[(node, true_neighbors[0])],
-                        edge_color="black",
-                        width=10
-                    )
+            if split=='custom':
+                # If all very similar, split all
+                if diff_rg < threshold and diff_rb < threshold and diff_gb < threshold:
+                    if plot:
+                        nx.draw_networkx_edges(G, 
+                                            pos = nx.get_node_attributes(G, 'pos'),
+                                            edgelist=[(node, true_neighbors[0]), (node, true_neighbors[1]), (node, true_neighbors[2])],
+                                            edge_color="black",
+                                            width=10)
+                    G.remove_edge(node, true_neighbors[0])
+                    G.remove_edge(node, true_neighbors[1])
+                    G.remove_edge(node, true_neighbors[2])
+                
+                else:
+                # Split y-node based on difference in angles
+                # If angle between red and green branch is smallest, remove 
+                # blue branch.
+                    if diff_rg < diff_rb and diff_rg < diff_gb:
+                        if plot:
+                            nx.draw_networkx_edges(G, 
+                                        pos = nx.get_node_attributes(G, 'pos'),
+                                        edgelist=[(node, true_neighbors[2])],
+                                        edge_color="black",
+                                        width=10)
+                        G.remove_edge(node, true_neighbors[2])
+                        
+                    # If angle between red and blue branch is lowest, remove green
+                    # branch.
+                    elif diff_rb < diff_rg and diff_rb < diff_gb:
+                        if plot:
+                            nx.draw_networkx_edges(G, 
+                                        pos = nx.get_node_attributes(G, 'pos'),
+                                        edgelist=[(node, true_neighbors[1])],
+                                        edge_color="black",
+                                        width=10)
+                        G.remove_edge(node, true_neighbors[1])
+                        
+                    # If angle between green and blue brach is smallest (and all 
+                    # equal cases), remove red branch.
+                    else:
+                        if plot:
+                            nx.draw_networkx_edges(G, 
+                                    pos = nx.get_node_attributes(G, 'pos'),
+                                    edgelist=[(node, true_neighbors[0])],
+                                    edge_color="black",
+                                    width=10)
+                        G.remove_edge(node, true_neighbors[0])                
+              
+                
+              
+                
+              
+            if split=='all':
                 G.remove_edge(node, true_neighbors[0])
-
-            # Split y-node based on difference in angles based on threshold
-            # threshold = 35
-
-            # if diff_rg < threshold:
-            #     nx.draw_networkx_edges(
-            # G,
-            # pos=nx.get_node_attributes(G, 'pos'),
-            # edgelist=[(node, true_neighbors[2])],
-            # edge_color="black",
-            # width=10
-            # )
-
-            # elif diff_rb < threshold:
-            #     nx.draw_networkx_edges(
-            # G,
-            # pos=nx.get_node_attributes(G, 'pos'),
-            # edgelist=[(node, true_neighbors[1])],
-            # edge_color="black",
-            # width=10
-            # )
-
-            # elif diff_gb < threshold:
-            #     nx.draw_networkx_edges(
-            # G,
-            # pos=nx.get_node_attributes(G, 'pos'),
-            # edgelist=[(node, true_neighbors[0])],
-            # edge_color="black",
-            # width=10
-            # )
-
-            # else:
-            #     nx.draw_networkx_edges(
-            # G,
-            # pos=nx.get_node_attributes(G, 'pos'),
-            # edgelist=[
-            # (node, true_neighbors[0]),
-            # (node, true_neighbors[1]),
-            # (n, true_neighbors[2])
-            # ],
-            # edge_color="black"
-            # ,
-            #             width=10)
-
+                G.remove_edge(node, true_neighbors[1])
+          
+            
+          
+            
             if plot:
                 plt.show()
+                
+            # # Stop criteria to look at certain junctions
+            # if count==29:
+            #     break
+        
 
     return G
+
+
 
 
 
