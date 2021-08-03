@@ -32,6 +32,7 @@ Now you can install fatbox from outside your local directory '/fatbox':
 pip3 install -e /fatbox
 ```
 
+### Check
 Now you can load any function from the toolbox in Python:
 ```
 from fatbox.plots import plot_attribute
