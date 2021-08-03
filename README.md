@@ -25,9 +25,9 @@ Go to the file: '/fatbox/fatbox/preprocessing.py' and comment this line:
 ```
 # import cv_algorithms
 ```
-as well as the entire function **skeleton_guo_hall** (which uses cv_algorithms). Next you need to tell pip not to install cv_algorithms. You can do this by deleting the associated lines in the files: anaconda_requirements.txt, pip_requirements.txt and setup.cfg.
+as well as the entire function **skeleton_guo_hall** (which uses cv_algorithms). Next you need to tell pip not to install cv_algorithms. You can do this by deleting the associated lines in the files: anaconda_requirements.txt, pip_requirements.txt and setup.cfg located in '/fatbox'.
 
-Now you can install fatbox from your local directory:
+Now you can install fatbox from outside your local directory '/fatbox':
 ```
 pip3 install -e /fatbox
 ```
