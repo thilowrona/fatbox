@@ -11,10 +11,27 @@ The basic idea of the module is to describe fault systems as graphs (or networks
 If you wanna get started, we highly recommend checking out some of our [tutorials](https://github.com/thilowrona/fatbox_tutorials) as well as our [documentation](https://fatbox.readthedocs.io/en/latest/index.html)
 
 ## Your own machine
-You can also use the fault analysis toolbox on your own machine. All you need is a Python 3 enviromnent, then you can install the toolbox:
+### Linux
+You can also use the fault analysis toolbox on your own machine. All you need is a Python 3 enviromnent and git, then you can install the toolbox:
 ```
 pip3 install git+https://github.com/thilowrona/fatbox.git
 ```
+### Windows
+In windows, I've had problems installing the package [cv_algorithms](https://github.com/ulikoehler/cv_algorithms). When that happens, you can clone this repo:
+```
+git clone https://github.com/thilowrona/fatbox
+```
+Comment this line:
+```
+# import cv_algorithms
+```
+and the function **skeleton_guo_hall** (which uses cv_algorithms). Next you need to tell pip not to install cv_algorithms. You can do this by deleting the associated lines in the files: anaconda_requirements.txt, pip_requirements.txt and setup.cfg.
+
+Now you can install fatbox from your local directory:
+```
+pip3 install -e /fatbox
+```
+
 Now you can load any function from the toolbox in Python:
 ```
 from fatbox.plots import plot_attribute
