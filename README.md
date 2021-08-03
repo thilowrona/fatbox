@@ -21,7 +21,7 @@ In windows, I've had problems installing the package [cv_algorithms](https://git
 ```
 git clone https://github.com/thilowrona/fatbox
 ```
-Go to the files /fatbox/fatbox/preprocessing.py and comment this line:
+Go to the file: '/fatbox/fatbox/preprocessing.py' and comment this line:
 ```
 # import cv_algorithms
 ```
