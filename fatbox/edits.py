@@ -697,9 +697,14 @@ def remove_self_edge(G):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
 
     # Calculation
+    removals = []
     for edge in G.edges:
         if edge[0] == edge[1]:
+            removals.append(edge)
+            
+    for edge in removals:
             G.remove_edge(*edge)
+            
     return G
 
 
