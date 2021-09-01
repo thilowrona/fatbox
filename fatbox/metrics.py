@@ -954,7 +954,7 @@ def extract_attribute(G, arr, attribute):
 
     # Assertions
     assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
-    assert isinstance(arr, np.array), 'arr is not a NumPy array'    
+    assert isinstance(arr, np.ndarray), 'arr is not a NumPy array'    
     assert isinstance(attribute, str), 'Name of attribute is not a string'
 
     # Calculation    
