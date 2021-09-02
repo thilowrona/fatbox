@@ -369,7 +369,7 @@ def plot_faults(G, ax=[], node_size=0.75, label=True, filename=False):
 
 
 
-def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, filename=False):
+def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, cmap = plt.cm.viridis, filename=False):
     """ Plot network node attribute
     
     Parameters
@@ -406,9 +406,6 @@ def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, filename=
     if vmax == []:
         vmax = metrics.compute_node_values(G, attribute, 'max')
 
-
-    # Colorbar
-    cmap = plt.cm.seismic
 
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
