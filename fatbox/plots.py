@@ -306,8 +306,7 @@ def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
 
 
 
-
-def plot_faults(G, ax=[], node_size=0.75, label=True, filename=False):
+def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, filename=False):
     """ Plot network faults
     
     Parameters
@@ -344,16 +343,21 @@ def plot_faults(G, ax=[], node_size=0.75, label=True, filename=False):
             ax=ax)
 
     if label is True:
-        for cc in sorted(nx.connected_components(G)):
+        
+        labels = metrics.get_fault_labels(G)
+        
+        for l in labels:
+            fault = metrics.get_fault(G, l)
+            
             # Calculate centre
             x_avg = 0
             y_avg = 0
 
-            for n in cc:
+            for n in fault:
                 y_avg = y_avg + G.nodes[n]['pos'][0]
                 x_avg = x_avg + G.nodes[n]['pos'][1]
 
-            N = len(cc)
+            N = len(fault.nodes)
             y_avg = y_avg/N
             x_avg = x_avg/N
 
