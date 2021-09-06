@@ -486,8 +486,6 @@ def plot_edge_attribute(G, attribute, ax=[]):
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
     cbar.ax.set_ylabel(attribute, rotation=270)
 
-    if filename:
-        plt.savefig(filename, dpi=300)
 
 
 
