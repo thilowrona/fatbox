@@ -372,15 +372,17 @@ def dip(x0, z0, x1, z1):
 
 
 
-def calculate_dip(G, to_nodes=False):
+
+
+def calculate_dip(G, non):
     """ Compute dip of fault network
     
     Parameters
     ----------
     G : nx.graph
         Graph containing edges
-    mode: string
-        Type of value that's calculated. Default: 'xy', Options: 'pos'
+    non: int
+        Number of neighbors
         
     Returns
     -------  
@@ -391,20 +393,66 @@ def calculate_dip(G, to_nodes=False):
     # Assertions
     assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
     
-    # Calculation
-    for edge in G.edges():
-        G.edges[edge]['dip'] = dip(G.nodes[edge[0]]['x'], G.nodes[edge[0]]['z'],
-                                   G.nodes[edge[1]]['x'], G.nodes[edge[1]]['z'])
+    for node in G:
+    
+        
+        neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
+        
+        
+        neighbors = sorted(neighbors.items())
+        
+        first = neighbors[0][0]
+        last = neighbors[-1][0]
+        
+        # print(node)
+        # print(neighbors)
+        # print(first, last)
 
-    # Write to nodes (if activated)
-    if to_nodes:
-        for node in G.nodes():
-            lst = []
-            for edge in G.edges(node):
-                lst.append(G.edges[edge]['dip'])
-            G.nodes[node]['dip'] = sum(lst) / len(lst)
+        
+        
+        x1 = G.nodes[first]['pos'][0]
+        y1 = G.nodes[first]['pos'][1]
+           
+        x2 = G.nodes[last]['pos'][0]
+        y2 = G.nodes[last]['pos'][1]
+          
+        
+        G.nodes[node]['dip'] = dip(x1, y1, x2, y2)
 
     return G
+
+
+
+
+def calculate_diff_dip(G, non):
+    """ Compute dip difference between nodes of fault network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph containing edges
+    non: int
+        Number of neighbors
+        
+    Returns
+    -------  
+    G : nx.graph
+        Graph containing edges with 'strike' attribute
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+
+    
+    for node in G:
+    
+        neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
+        dips = [G.nodes[node]['dip'] for node in neighbors.keys()]
+        G.nodes[node]['max_diff'] = np.max(np.diff(dips))
+    
+    return G
+
+
 
 
 
