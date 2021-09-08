@@ -565,7 +565,45 @@ def split_triple_junctions(G, dos, split='minimum', threshold = 20, plot=False):
     return G
 
 
-
+def remove_nodes(G, attribute, sign, threshold):
+    """ Remove node with attribute below/above/at certain value
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    attribute : str
+        Attribute
+    sign : str
+        Attribute
+    threshold : float
+        Value
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """  
+    removals = []
+    
+    if sign == '>':        
+        for node in G:
+            if G.nodes[node][attribute] > threshold:
+                removals.append(node) 
+                
+    elif sign == '<':
+        for node in G:
+            if G.nodes[node][attribute] < threshold:
+                removals.append(node)         
+    
+    elif sign == '=':
+        for node in G:
+            if G.nodes[node][attribute] == threshold:
+                removals.append(node)         
+    
+    G.remove_nodes_from(removals)
+    
+    return G
 
 
 
