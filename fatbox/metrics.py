@@ -1016,6 +1016,42 @@ def extract_attribute(G, arr, attribute):
     return G
 
 
+def extract_attribute_periodic(G, arr, attribute):
+    """ Extract attribute from image to network with periodic bc in y-direction
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Fault network
+    arr : np.array
+        Array to extract attribute from
+    attribute : string
+        Name of attribute assigned to network
+    
+    Returns
+    -------  
+    G
+        nx.graph
+    """
+
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
+    assert isinstance(arr, np.ndarray), 'arr is not a NumPy array'    
+    assert isinstance(attribute, str), 'Name of attribute is not a string'
+
+    # Calculation    
+    (x_max, y_max) = arr.shape
+    for node in G:
+        y, x = G.nodes[node]['pos']
+        if y > y_max:
+            G.nodes[node][attribute] = arr[int(x), int(y-y_max)]
+        if y < 0:
+            G.nodes[node][attribute] = arr[int(x), int(y+y_max)]
+        else:
+            G.nodes[node][attribute] = arr[int(x), int(y)]
+    return G    
+
+
 
 
 def extract_profile(G, attribute):
