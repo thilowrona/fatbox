@@ -49,19 +49,19 @@ def compute_node_values(G, attribute, mode):
     
     # Compute value
     if mode == 'min':
-        return np.min(values)
+        return np.nanmin(values)
     
     elif mode == 'max':
-        return np.max(values)
+        return np.nanmax(values)
     
     elif mode == 'mean':
-        return np.mean(values)
+        return np.nanmean(values)
     
     elif mode == 'range':
-        return np.max(values)-np.min(values)
+        return np.nanmax(values)-np.nanmin(values)
 
     elif mode == 'sum':
-        return np.sum(values)
+        return np.nansum(values)
 
 
 
