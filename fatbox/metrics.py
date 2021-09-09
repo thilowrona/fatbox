@@ -1321,7 +1321,6 @@ def filter_pickup_points(G, H):
 
 
 
-
 def calculate_slip_rate(G, H, dim):
     """ Calculate slip rate from pick up points
     
@@ -1348,58 +1347,38 @@ def calculate_slip_rate(G, H, dim):
     if dim == 2:
         for node in H.nodes:
             if node[1] == 0:  # centre point
-
-                if (
-                    H.nodes[(node[0], 1)]['v_x'] == 0 or
-                    H.nodes[(node[0], 2)]['v_x'] == 0
-                ):
-                    G.nodes[node[0]]['slip_rate_x'] = 0
-                    G.nodes[node[0]]['slip_rate_z'] = 0
-                    G.nodes[node[0]]['slip_rate'] = 0
-                else:
-                    G.nodes[node[0]]['slip_rate_x'] = abs(
-                        H.nodes[(node[0], 1)]['v_x'] -
-                        H.nodes[(node[0], 2)]['v_x']
-                    )
-                    G.nodes[node[0]]['slip_rate_z'] = abs(
-                        H.nodes[(node[0], 1)]['v_z'] -
-                        H.nodes[(node[0], 2)]['v_z']
-                    )
-                    G.nodes[node[0]]['slip_rate'] = math.sqrt(
-                        G.nodes[node[0]]['slip_rate_x']**2 +
-                        G.nodes[node[0]]['slip_rate_z']**2
-                    )
+                G.nodes[node[0]]['slip_rate_x'] = abs(
+                    H.nodes[(node[0], 1)]['v_x'] -
+                    H.nodes[(node[0], 2)]['v_x']
+                )
+                G.nodes[node[0]]['slip_rate_z'] = abs(
+                    H.nodes[(node[0], 1)]['v_z'] -
+                    H.nodes[(node[0], 2)]['v_z']
+                )
+                G.nodes[node[0]]['slip_rate'] = math.sqrt(
+                    G.nodes[node[0]]['slip_rate_x']**2 +
+                    G.nodes[node[0]]['slip_rate_z']**2
+                )
     if dim == 3:
         for node in H.nodes:
-            if node[1] == 0:  # centre point
-                # Outside of the box
-                if (
-                    H.nodes[(node[0], 1)]['v_x'] == 0 or
-                    H.nodes[(node[0], 2)]['v_x'] == 0
-                ):
-                    G.nodes[node[0]]['slip_rate_x'] = 0
-                    G.nodes[node[0]]['slip_rate_y'] = 0
-                    G.nodes[node[0]]['slip_rate_z'] = 0
-                    G.nodes[node[0]]['slip_rate'] = 0
-                # Inside the box
-                else:
-                    G.nodes[node[0]]['slip_rate_x'] = abs(
-                        H.nodes[(node[0], 1)]['v_x'] -
-                        H.nodes[(node[0], 2)]['v_x']
-                    )
-                    G.nodes[node[0]]['slip_rate_y'] = abs(
-                        H.nodes[(node[0], 1)]['v_y'] -
-                        H.nodes[(node[0], 2)]['v_y']
-                    )
-                    G.nodes[node[0]]['slip_rate_z'] = abs(
-                            H.nodes[(node[0], 1)]['v_z'] -
-                            H.nodes[(node[0], 2)]['v_z']
-                    )
-                    G.nodes[node[0]]['slip_rate'] = math.sqrt(
-                        G.nodes[node[0]]['slip_rate_x']**2 +
-                        G.nodes[node[0]]['slip_rate_y']**2 +
-                        G.nodes[node[0]]['slip_rate_z']**2
-                    )
+            if node[1] == 0:
+                G.nodes[node[0]]['slip_rate_x'] = abs(
+                    H.nodes[(node[0], 1)]['v_x'] -
+                    H.nodes[(node[0], 2)]['v_x']
+                )
+                G.nodes[node[0]]['slip_rate_y'] = abs(
+                    H.nodes[(node[0], 1)]['v_y'] -
+                    H.nodes[(node[0], 2)]['v_y']
+                )
+                G.nodes[node[0]]['slip_rate_z'] = abs(
+                        H.nodes[(node[0], 1)]['v_z'] -
+                        H.nodes[(node[0], 2)]['v_z']
+                )
+                G.nodes[node[0]]['slip_rate'] = math.sqrt(
+                    G.nodes[node[0]]['slip_rate_x']**2 +
+                    G.nodes[node[0]]['slip_rate_y']**2 +
+                    G.nodes[node[0]]['slip_rate_z']**2
+                )
 
     return G
 
@@ -1435,59 +1414,41 @@ def calculate_slip(G, H, dt, dim):
     if dim == 2:
         for node in H.nodes:
             if node[1] == 0:
-
-                if (
-                    H.nodes[(node[0], 1)]['v_x'] == 0 or
-                    H.nodes[(node[0], 2)]['v_x'] == 0
-                ):
-                    G.nodes[node[0]]['slip_x'] = 0
-                    G.nodes[node[0]]['slip_z'] = 0
-                    G.nodes[node[0]]['slip'] = 0
-                else:
-                    G.nodes[node[0]]['slip_x'] = abs(
-                        H.nodes[(node[0], 1)]['v_x'] -
-                        H.nodes[(node[0], 2)]['v_x']
-                    )*dt
-                    G.nodes[node[0]]['slip_z'] = abs(
-                        H.nodes[(node[0], 1)]['v_z'] -
-                        H.nodes[(node[0], 2)]['v_z']
-                    )*dt
-                    G.nodes[node[0]]['slip'] = math.sqrt(
-                        G.nodes[node[0]]['slip_x']**2 +
-                        G.nodes[node[0]]['slip_z']**2
-                    )
+                G.nodes[node[0]]['slip_x'] = abs(
+                    H.nodes[(node[0], 1)]['v_x'] -
+                    H.nodes[(node[0], 2)]['v_x']
+                )*dt
+                G.nodes[node[0]]['slip_z'] = abs(
+                    H.nodes[(node[0], 1)]['v_z'] -
+                    H.nodes[(node[0], 2)]['v_z']
+                )*dt
+                G.nodes[node[0]]['slip'] = math.sqrt(
+                    G.nodes[node[0]]['slip_x']**2 +
+                    G.nodes[node[0]]['slip_z']**2
+                )
 
     if dim == 3:
         for node in H.nodes:
             if node[1] == 0:
-
-                if (
-                    H.nodes[(node[0], 1)]['v_x'] == 0 or
-                    H.nodes[(node[0], 2)]['v_x'] == 0
-                ):
-                    G.nodes[node[0]]['slip_x'] = 0
-                    G.nodes[node[0]]['slip_y'] = 0
-                    G.nodes[node[0]]['slip_z'] = 0
-                    G.nodes[node[0]]['slip'] = 0
-                else:
-                    G.nodes[node[0]]['slip_x'] = abs(
-                        H.nodes[(node[0], 1)]['v_x'] -
-                        H.nodes[(node[0], 2)]['v_x']
-                    )*dt
-                    G.nodes[node[0]]['slip_y'] = abs(
-                        H.nodes[(node[0], 1)]['v_y'] -
-                        H.nodes[(node[0], 2)]['v_y']
-                    )*dt
-                    G.nodes[node[0]]['slip_z'] = abs(
-                        H.nodes[(node[0], 1)]['v_z'] -
-                        H.nodes[(node[0], 2)]['v_z']
-                    )*dt
-                    G.nodes[node[0]]['slip'] = math.sqrt(
-                        G.nodes[node[0]]['slip_x']**2 +
-                        G.nodes[node[0]]['slip_y']**2 +
-                        G.nodes[node[0]]['slip_z']**2
-                    )
+                G.nodes[node[0]]['slip_x'] = abs(
+                    H.nodes[(node[0], 1)]['v_x'] -
+                    H.nodes[(node[0], 2)]['v_x']
+                )*dt
+                G.nodes[node[0]]['slip_y'] = abs(
+                    H.nodes[(node[0], 1)]['v_y'] -
+                    H.nodes[(node[0], 2)]['v_y']
+                )*dt
+                G.nodes[node[0]]['slip_z'] = abs(
+                    H.nodes[(node[0], 1)]['v_z'] -
+                    H.nodes[(node[0], 2)]['v_z']
+                )*dt
+                G.nodes[node[0]]['slip'] = math.sqrt(
+                    G.nodes[node[0]]['slip_x']**2 +
+                    G.nodes[node[0]]['slip_y']**2 +
+                    G.nodes[node[0]]['slip_z']**2
+                )
     return G
+
 
 
 
