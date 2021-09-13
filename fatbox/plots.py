@@ -277,7 +277,6 @@ def plot_components(G, label=True, **kwargs):
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
             node_color=node_color,
-            node_size=0.75,
             **kwargs)
 
     ax=kwargs['ax']
