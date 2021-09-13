@@ -53,7 +53,7 @@ def get_node_colors(G, attribute, return_palette=False):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
 
     # Calculation
-    n_comp = 10000
+    n_comp  = max([G.nodes[node][attribute] for node in G]) + 1
     palette = sns.color_palette('husl', n_comp)
     palette = np.array(palette)
     
@@ -124,7 +124,7 @@ def get_edge_colors(G, attribute, return_palette=False):
 # A couple of functions to visulize arrays
 #******************************************************************************
 
-def plot_overlay(label, image):
+def plot_overlay(label, image, **kwargs):
     """ Plot a label onto of image
     
     Parameters
@@ -156,12 +156,12 @@ def plot_overlay(label, image):
     background.paste(overlay, (0, 0), overlay)
 
     plt.figure()
-    plt.imshow(background)
+    plt.imshow(background, **kwargs)
 
 
 
 
-def plot_comparison(data_sets):
+def plot_comparison(data_sets, **kwargs):
     """ Plot a couple of images for comparison
     
     Parameters
@@ -176,14 +176,16 @@ def plot_comparison(data_sets):
     count = len(data_sets)
 
     fig, axs = plt.subplots(count, 1, figsize=(12, 12))
+    
     for n, data in enumerate(data_sets):
-        axs[n].imshow(data)
+        axs[n].imshow(data, **kwargs)
+        
 
 
 
 
 
-def plot_threshold(data, threshold, value, filename=False):
+def plot_threshold(data, threshold, value, **kwargs):
 
     fig, axs = plt.subplots(2, 1, figsize=(15, 10))
 
@@ -197,17 +199,12 @@ def plot_threshold(data, threshold, value, filename=False):
     cb0.ax.plot([-1, 1], [value]*2, 'r')
 
     # Second plot
-    p1 = axs[1].imshow(threshold)
+    p1 = axs[1].imshow(threshold, **kwargs)
 
     # Color bar locator
     divider = make_axes_locatable(axs[1])
     cax = divider.append_axes("right", size="3%", pad=0.15)
     cb0 = fig.colorbar(p1, ax=axs[1], cax=cax)
-
-    if filename:
-        plt.savefig(filename)
-
-
 
 
 
@@ -220,7 +217,7 @@ def plot_threshold(data, threshold, value, filename=False):
 # A couple of functions to visulize networks
 #******************************************************************************
 
-def plot(G, ax=[], color='red', with_labels=False):
+def plot(G, **kwargs):
     """ Plot network
     
     Parameters
@@ -242,22 +239,16 @@ def plot(G, ax=[], color='red', with_labels=False):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
     
     # Plotting
-    if ax == []:
-        fig, ax = plt.subplots()
-
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
-            node_size=1,
-            node_color=color,
-            with_labels=with_labels,
-            ax=ax)
-
-    ax.axis('on')  # turns on axis
+            **kwargs)
 
 
 
 
-def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
+
+
+def plot_components(G, label=True, **kwargs):
     """ Plot network components
     
     Parameters
@@ -283,15 +274,13 @@ def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
     # Plotting    
     node_color, palette = get_node_colors(G, 'component', return_palette=True)
     
-    if ax == []:
-        fig, ax = plt.subplots()
-
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
             node_color=node_color,
-            node_size=node_size,
-            ax=ax)
+            node_size=0.75,
+            **kwargs)
 
+    ax=kwargs['ax']
     ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
@@ -316,14 +305,12 @@ def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
             ax.text(y_avg, x_avg, label, fontsize=15,
                     color=palette[G.nodes[n]['component']])
 
-    if filename:
-        plt.savefig(filename, dpi=300)
+    
 
 
 
 
-
-def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, alpha=1, filename=False):
+def plot_faults(G, label=True, **kwargs):
     """ Plot network faults
     
     Parameters
@@ -349,16 +336,12 @@ def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, alpha=1, file
     # Plotting
     node_color, palette = get_node_colors(G, 'fault', return_palette=True)
 
-    if ax == []:
-        fig, ax = plt.subplots()
-
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
             node_color=node_color,
-            node_size=node_size,
-            alpha=alpha,
-            ax=ax)
+            **kwargs)
 
+    ax=kwargs['ax']
     if label is True:
         
         labels = metrics.get_fault_labels(G)
@@ -390,7 +373,7 @@ def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, alpha=1, file
 
 
 
-def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], cmap = plt.cm.viridis, node_size=1, filename=False):
+def plot_attribute(G, attribute, **kwargs):
     """ Plot network node attribute
     
     Parameters
@@ -418,26 +401,13 @@ def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], cmap = plt.cm.viridis,
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
     
     # Plotting
-    if ax == []:
-        fig, ax = plt.subplots()
-
-    if vmin == []:
-        vmin = metrics.compute_node_values(G, attribute, 'min')
-
-    if vmax == []:
-        vmax = metrics.compute_node_values(G, attribute, 'max')
- 
-
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
-            node_color=np.array([G.nodes[node][attribute]
-                                 for node in G.nodes]),
-            node_size=node_size,
-            ax=ax,
-            vmin=vmin,
-            vmax=vmax,
-            cmap=cmap)
+            node_color=np.array([G.nodes[node][attribute] for node in G]),
+            node_size=0.75,
+            **kwargs)
 
+    ax = kwargs['ax']
     ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
@@ -447,14 +417,13 @@ def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], cmap = plt.cm.viridis,
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
     cbar.ax.set_ylabel(attribute, rotation=270)
 
-    if filename:
-        plt.savefig(filename, dpi=300)
 
 
 
 
 
-def plot_edge_attribute(G, attribute, ax=[]):
+
+def plot_edge_attribute(G, attribute, **kwargs):
     """ Plot network edge attribute
     
     Parameters
@@ -476,19 +445,16 @@ def plot_edge_attribute(G, attribute, ax=[]):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
     
     # Plotting
-    if ax == []:
-        fig, ax = plt.subplots()
-
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
             node_size=0.001,
-            ax=ax)
+            **kwargs)
 
     nx.draw_networkx_edges(G,
                            pos=nx.get_node_attributes(G, 'pos'),
                            edge_color=np.array([G.edges[edge][attribute] for edge in G.edges]),
-                           edge_cmap=plt.cm.twilight_shifted,
-                           ax=ax)
+                           **kwargs)
+    ax = kwargs['ax']
     ax.axis('on')
 
     # Colorbar
@@ -509,7 +475,7 @@ def plot_edge_attribute(G, attribute, ax=[]):
 
 
 
-def cross_plot(G, var0, var1):
+def cross_plot(G, var0, var1, **kwargs):
     """ Cross-plot two network (node) properties
     
     Parameters
@@ -552,7 +518,7 @@ def cross_plot(G, var0, var1):
             x[n] = G.nodes[node][var0]
             z[n] = G.nodes[node]['pos'][0]
 
-    plt.plot(x, z, '.')
+    plt.plot(x, z, '.', **kwargs)
 
 
 
@@ -577,8 +543,8 @@ def plot_compare_graphs(G, H):
     
     # Plotting
     fig, ax = plt.subplots(2, 1)
-    plot_components(G, ax[0])
-    plot_components(H, ax[1])
+    plot_components(G, ax=ax[0], **kwargs)
+    plot_components(H, ax=ax[1], **kwargs)
 
 
 
