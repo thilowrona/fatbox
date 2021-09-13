@@ -33,7 +33,7 @@ cmap = colors.ListedColormap(
 )
 
 
-def get_node_colors(G, attribute):
+def get_node_colors(G, attribute, return_palette=False):
     """ Get node colors for plotting
     
     Parameters
@@ -54,7 +54,14 @@ def get_node_colors(G, attribute):
 
     # Calculation
     n_comp = 10000
-    palette = sns.color_palette(None, 2*n_comp)
+    palette = sns.color_palette('husl', n_comp)
+    palette = np.array(palette)
+    
+    # Shuffle
+    perm = np.arange(palette.shape[0])
+    np.random.shuffle(perm)
+    palette = palette[perm]
+    
     node_color = np.zeros((len(G), 3))
 
     for n, node in enumerate(G):
@@ -63,12 +70,15 @@ def get_node_colors(G, attribute):
         node_color[n, 1] = color[1]
         node_color[n, 2] = color[2]
 
-    return node_color
+    if return_palette:
+        return node_color, palette
+    else:
+        return node_color
 
 
 
 
-def get_edge_colors(G, attribute):
+def get_edge_colors(G, attribute, return_palette=False):
     """ Get edge colors for plotting
     
     Parameters
@@ -89,8 +99,13 @@ def get_edge_colors(G, attribute):
 
     # Calculation
     n_comp = 10000
-    palette = sns.color_palette(None, 2*n_comp)
-    edge_color = np.zeros((len(G.edges), 3))
+    palette = sns.color_palette('husl', n_comp)
+    palette = np.array(palette)
+    
+    # Shuffle
+    perm = np.arange(palette.shape[0])
+    np.random.shuffle(perm)
+    palette = palette[perm]
 
     for n, edge in enumerate(G.edges):
         color = palette[G.edges[edge][attribute]]
@@ -98,7 +113,10 @@ def get_edge_colors(G, attribute):
         edge_color[n, 1] = color[1]
         edge_color[n, 2] = color[2]
 
-    return edge_color
+    if return_palette:
+        return edge_color, palette
+    else:
+        return edge_color
 
 
 #******************************************************************************
@@ -262,17 +280,15 @@ def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
     # Assertions
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
     
-    # Plotting
-    n_comp = 10000
-    palette = sns.color_palette(None, 2*n_comp)
-
-
+    # Plotting    
+    node_color, palette = get_node_colors(G, 'component', return_palette=True)
+    
     if ax == []:
         fig, ax = plt.subplots()
 
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
-            node_color=get_node_colors(G, 'component'),
+            node_color=node_color,
             node_size=node_size,
             ax=ax)
 
@@ -306,7 +322,8 @@ def plot_components(G, ax=[], node_size=0.75, label=True, filename=False):
 
 
 
-def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, filename=False):
+
+def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, alpha=1, filename=False):
     """ Plot network faults
     
     Parameters
@@ -330,16 +347,16 @@ def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, filename=Fals
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph" 
     
     # Plotting
-    n_comp = 10000
-    palette = sns.color_palette(None, 2*n_comp)
+    node_color, palette = get_node_colors(G, 'fault', return_palette=True)
 
     if ax == []:
         fig, ax = plt.subplots()
 
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
-            node_color=get_node_colors(G, 'fault'),
-            node_size=0.75,
+            node_color=node_color,
+            node_size=node_size,
+            alpha=alpha,
             ax=ax)
 
     if label is True:
@@ -373,7 +390,7 @@ def plot_faults(G, ax=[], node_size=0.75, label=True, fontsize=15, filename=Fals
 
 
 
-def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, cmap = plt.cm.viridis, filename=False):
+def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], cmap = plt.cm.viridis, node_size=1, filename=False):
     """ Plot network node attribute
     
     Parameters
@@ -409,7 +426,7 @@ def plot_attribute(G, attribute, ax=[], vmin=[], vmax=[], node_size=1, cmap = pl
 
     if vmax == []:
         vmax = metrics.compute_node_values(G, attribute, 'max')
-
+ 
 
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
@@ -485,6 +502,7 @@ def plot_edge_attribute(G, attribute, ax=[]):
 
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
     cbar.ax.set_ylabel(attribute, rotation=270)
+
 
 
 
