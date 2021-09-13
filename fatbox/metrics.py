@@ -265,73 +265,65 @@ def compute_edge_values(G, attribute, mode):
         return np.sum(values)
 
 
+def strike(x1, x2, y1, y2):
+  if (x2-x1)<0:
+    strike = math.degrees(math.atan2((x2-x1),(y2-y1))) + 360
+  else:
+    strike = math.degrees(math.atan2((x2-x1),(y2-y1)))
+  
+  #Scale to [0, 180]
+  if strike<=180:
+    return strike
+  else:
+    return strike - 180
 
-def compute_strikes(G, mode='xy'):
-    """ Compute strikes of edges
+
+def calculate_strike(G, non):
+    """ Compute dip of fault network
     
     Parameters
     ----------
     G : nx.graph
         Graph containing edges
-    mode: string
-        Type of value that's calculated. Default: 'xy', Options: 'pos'
+    non: int
+        Number of neighbors
         
     Returns
     -------  
     G : nx.graph
         Graph containing edges with 'strike' attribute
     """
-
-    # Assertions
-    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'
-    assert (mode in ['xy', 'pos']), "Mode is neither 'xy' nor 'pos'"    
     
-    # Calculation
-    if mode == 'pos':
-        for edge in G.edges:
-            # Get coordinates
-            x0 = G.nodes[edge[0]]['pos'][0]
-            x1 = G.nodes[edge[1]]['pos'][0]
-            y0 = G.nodes[edge[0]]['pos'][1]
-            y1 = G.nodes[edge[1]]['pos'][1]
-             
-            # Calculate
-            if (x1-x0)<0:
-              strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
-            else:
-              strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
-            
-            #Scale to [0, 180]
-            if strike<=180:
-              G.edges[edge]['strike'] = strike
-            else:
-              G.edges[edge]['strike'] = strike - 180
+    # Assertions
+    assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
+    
+    for node in G:
+    
+        
+        neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
+        
+        
+        neighbors = sorted(neighbors.items())
+        
+        first = neighbors[0][0]
+        last = neighbors[-1][0]
+        
+        # print(node)
+        # print(neighbors)
+        # print(first, last)
 
-
-
-    if mode == 'xy':
-        for edge in G.edges:
-            # Get coordinates
-            x0 = G.nodes[edge[0]]['x']
-            x1 = G.nodes[edge[1]]['x']
-            y0 = G.nodes[edge[0]]['y']
-            y1 = G.nodes[edge[1]]['y']
-            
-            # Calculate
-            if (x1-x0)<0:
-              strike = math.degrees(math.atan2((x1-x0),(y1-y0))) + 360
-            else:
-              strike = math.degrees(math.atan2((x1-x0),(y1-y0)))
-            
-            #Scale to [0, 180]
-            if strike<=180:
-              G.edges[edge]['strike'] = strike
-            else:
-              G.edges[edge]['strike'] = strike - 180
+        
+        
+        x1 = G.nodes[first]['pos'][0]
+        y1 = G.nodes[first]['pos'][1]
+           
+        x2 = G.nodes[last]['pos'][0]
+        y2 = G.nodes[last]['pos'][1]
+          
+        
+        G.nodes[node]['dip'] = strike(x1, y1, x2, y2)
 
     return G
-
-
 
 
 
