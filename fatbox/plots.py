@@ -3,7 +3,7 @@ import math
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib import colors
+from matplotlib import colors, cm
 from matplotlib.collections import PatchCollection
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Polygon
@@ -403,11 +403,20 @@ def plot_attribute(G, attribute, **kwargs):
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
             node_color=np.array([G.nodes[node][attribute] for node in G]),
+            node_size=0.75,
             **kwargs)
 
     ax = kwargs['ax']
     ax.axis('on')  # turns on axis
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+
+    if 'cmap' in kwargs:
+      cmap = kwargs['cmap']
+    else:
+      cmap = plt.get_cmap('viridis')
+
+    vmin = metrics.compute_node_values(G, attribute, 'min')
+    vmax = metrics.compute_node_values(G, attribute, 'max')
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
     sm.set_array([])
