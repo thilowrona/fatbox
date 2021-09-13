@@ -403,7 +403,6 @@ def plot_attribute(G, attribute, **kwargs):
     nx.draw(G,
             pos=nx.get_node_attributes(G, 'pos'),
             node_color=np.array([G.nodes[node][attribute] for node in G]),
-            node_size=0.75,
             **kwargs)
 
     ax = kwargs['ax']
