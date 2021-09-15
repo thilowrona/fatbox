@@ -321,7 +321,7 @@ def calculate_strike(G, non):
         y2 = G.nodes[last]['pos'][1]
           
         
-        G.nodes[node]['dip'] = strike(x1, y1, x2, y2)
+        G.nodes[node]['strike'] = strike(x1, y1, x2, y2)
 
     return G
 
