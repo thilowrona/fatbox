@@ -415,7 +415,14 @@ def plot_attribute(G, attribute, **kwargs):
     else:
       cmap = plt.get_cmap('viridis')
 
+    if 'vmin' in kwargs:
+      vmin = kwargs['vmin']
+    else:
     vmin = metrics.compute_node_values(G, attribute, 'min')
+
+    if 'vmax' in kwargs:
+      vmax = kwargs['vmax']
+    else:
     vmax = metrics.compute_node_values(G, attribute, 'max')
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax))
@@ -423,6 +430,7 @@ def plot_attribute(G, attribute, **kwargs):
 
     cbar = plt.colorbar(sm, fraction=0.046, pad=0.04)
     cbar.ax.set_ylabel(attribute, rotation=270)
+
 
 
 
