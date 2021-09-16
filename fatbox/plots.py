@@ -53,7 +53,7 @@ def get_node_colors(G, attribute, return_palette=False):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
 
     # Calculation
-    n_comp  = max([G.nodes[node][attribute] for node in G]) + 1
+    n_comp  = 10000
     palette = sns.color_palette('husl', n_comp)
     palette = np.array(palette)
     
