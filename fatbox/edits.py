@@ -146,7 +146,43 @@ def remove_cycles(G):
 
     return G
 
+def remove_cycles_hard(G):
+    """ Remove cycles from network
+    
+    Parameters
+    ----------
+    G : nx.graph
+        Graph
+    
+    Returns
+    -------  
+    G : nx.graph
+        Graph
+    """
+    
+    # Assertions
+    assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
 
+    # Calculation
+    nodes_to_remove = set()
+
+    # Find cycles
+    cycles = nx.cycle_basis(G)
+
+    for n, cycle in enumerate(cycles):
+
+        # Find y-nodes (i.e. node with 3 edges)
+        y_nodes = [node for node in cycle if G.degree(node) == 3]
+
+        # If cycle has only one y-node, remove it (except the y-node itself)
+        print('Cycle ' + str(n) + ' has only one y-node. Remove it')
+        for node in cycle:
+            if node not in y_nodes:
+                nodes_to_remove.add(node)
+
+    G.remove_nodes_from(nodes_to_remove)
+
+    return G
 
 
 def remove_triple_junctions(G):
