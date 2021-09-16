@@ -2,6 +2,7 @@
 import math
 import networkx as nx
 import numpy as np
+from scipy.ndimage.filters import gaussian_filter1d
 
 
 
@@ -166,6 +167,60 @@ def calculate_polarity(G):
 
 
 
+
+def compute_curvature(G, non, sigma):
+
+  for node in G:
+      
+    neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
+
+    # Compute distances
+    dm = np.zeros((len(neighbors), len(neighbors)))
+    for n, neighbor in enumerate(neighbors):
+      for m, another in enumerate(neighbors):
+        dm[n,m] = nx.shortest_path_length(G, neighbor, another)
+
+    maximum_distance = np.max(dm)
+
+    # Find start and end node
+    for n, neighbor in enumerate(neighbors):
+      for m, another in enumerate(neighbors):
+        if dm[n,m] == maximum_distance:
+          start = neighbor
+          end = another
+          break
+
+    # Compute path
+    path = nx.shortest_path(G, start, end) 
+
+    #print(dm)
+    #print(maximum)
+    #print(path)
+
+
+    x = np.zeros(len(path))
+    y = np.zeros(len(path))
+
+    for n, pode in enumerate(path):
+      x[n] = G.nodes[pode]['pos'][0]
+      y[n] = G.nodes[pode]['pos'][1]
+
+
+    ysmoothed = gaussian_filter1d(y, sigma=sigma)
+
+    dx = np.gradient(x, x)  # first derivatives
+    dy = np.gradient(y, x)
+
+    d2x = np.gradient(dx, x)  # second derivatives
+    d2y = np.gradient(dy, x)
+
+    cur = np.abs(d2y) / (np.sqrt(1 + dy ** 2)) ** 1.5  # curvature
+
+    G.nodes[node]['min_curv'] = np.nanmin(cur)
+    G.nodes[node]['mean_curv'] = np.nanmean(cur)
+    G.nodes[node]['max_curv'] = np.nanmax(cur)
+
+  return G
 
 
 #******************************************************************************
