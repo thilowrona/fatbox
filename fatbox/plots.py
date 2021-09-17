@@ -59,6 +59,7 @@ def get_node_colors(G, attribute, return_palette=False):
     
     # Shuffle
     perm = np.arange(palette.shape[0])
+    np.random.seed(42)
     np.random.shuffle(perm)
     palette = palette[perm]
     
@@ -104,6 +105,7 @@ def get_edge_colors(G, attribute, return_palette=False):
     
     # Shuffle
     perm = np.arange(palette.shape[0])
+    np.random.seed(42)
     np.random.shuffle(perm)
     palette = palette[perm]
 
