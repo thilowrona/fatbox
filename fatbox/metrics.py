@@ -1209,7 +1209,6 @@ def calculate_mid_points(G):
     return H
 
 
-
 def calculate_direction(G, cutoff, normalize=True):
     """ Calculate direction for entire network
     
@@ -1259,7 +1258,7 @@ def calculate_direction(G, cutoff, normalize=True):
         dy = pt_0[1] - pt_1[1]
         
         # normalize
-        v_norm = np.linalg.norm([dx, dy])
+        v_norm = np.array([dx,dy])/np.linalg.norm([dx, dy])
         dx = v_norm[0]
         dy = v_norm[1]
         
@@ -1268,6 +1267,7 @@ def calculate_direction(G, cutoff, normalize=True):
         G.nodes[node]['dy'] = dy
 
     return G
+
 
 
 
