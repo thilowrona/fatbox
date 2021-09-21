@@ -6,7 +6,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # Fatbox
-import fatbox
+from fatbox import metrics
 
 #==============================================================================
 # This file contains a series of function to edit fault networks (graphs). 
@@ -73,7 +73,7 @@ def remove_triangles(G):
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
 
     # Calculation
-    G = fatbox.metrics.compute_edge_length(G)
+    G = metrics.compute_edge_length(G)
 
     # Find triangles through edges
     triangles = []
@@ -944,7 +944,7 @@ def connect_components(G, cc0, cc1, relabel=True):
 
     for e0 in edge0:
         for e1 in edge1:
-            distance = fatbox.metrics.distance_between_nodes(G, e0, e1)
+            distance = metrics.distance_between_nodes(G, e0, e1)
             if distance < value:
                 value = distance
                 ep0 = e0
@@ -990,7 +990,7 @@ def min_dist_comp(G, cc0, cc1):
     threshold = 1e6
     for n0 in cc0:
         for n1 in cc1:
-            distance = fatbox.metrics.distance_between_nodes(G, n0, n1)
+            distance = metrics.distance_between_nodes(G, n0, n1)
             if distance < threshold:
                 threshold = distance
                 
@@ -1057,7 +1057,7 @@ def max_dist_comp(G, cc0, cc1):
     threshold = 0
     for n0 in cc0:
         for n1 in cc1:
-            distance = fatbox.metrics.distance_between_nodes(G, n0, n1)
+            distance = metrics.distance_between_nodes(G, n0, n1)
             if distance > threshold:
                 threshold = distance
     return threshold
@@ -1156,8 +1156,8 @@ def common_components(G, H):
     assert isinstance(H, nx.Graph), "H is not a NetworkX graph"
     
     # Calculation
-    C_G = fatbox.metrics.get_component_labels(G)
-    C_H = fatbox.metrics.get_component_labels(H)
+    C_G = metrics.get_component_labels(G)
+    C_H = metrics.get_component_labels(H)
     
     return list(set(C_G) & set(C_H))
 
@@ -1186,8 +1186,8 @@ def unique_components(G_0, G_1):
     assert isinstance(G_1, nx.Graph), "G_1 is not a NetworkX graph"
     
     # Calculation   
-    G_0_components = set(fatbox.metrics.get_component_labels(G_0))
-    G_1_components = set(fatbox.metrics.get_component_labels(G_1))
+    G_0_components = set(metrics.get_component_labels(G_0))
+    G_1_components = set(metrics.get_component_labels(G_1))
 
     return ([item for item in G_0_components if item not in G_1_components],
             [item for item in G_1_components if item not in G_0_components])
@@ -1422,8 +1422,8 @@ def similarity_between_graphs(G, H, normalize=True):
     assert isinstance(H, nx.Graph), "G is not a NetworkX graph"
 
     # Calculation
-    components_G = sorted(fatbox.metrics.get_component_labels(G))  # components undefined!?
-    components_H = sorted(fatbox.metrics.get_component_labels(H))
+    components_G = sorted(metrics.get_component_labels(G))  # components undefined!?
+    components_H = sorted(metrics.get_component_labels(H))
 
     matrix = np.zeros((len(components_G), len(components_H)))
 
@@ -1514,7 +1514,7 @@ def relabel(G, connections, count):
 
     highest_index = max(np.max(sources), count)
 
-    components_old = fatbox.metrics.get_component_labels(G)
+    components_old = metrics.get_component_labels(G)
     components_new = [None] * len(components_old)
 
     for n in range(len(components_old)):
