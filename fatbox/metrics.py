@@ -320,7 +320,7 @@ def compute_edge_values(G, attribute, mode):
         return np.sum(values)
 
 
-def strike(x1, x2, y1, y2):
+def strike(x1, y1, x2, y2):
   if (x2-x1)<0:
     strike = math.degrees(math.atan2((x2-x1),(y2-y1))) + 360
   else:
