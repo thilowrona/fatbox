@@ -742,7 +742,7 @@ def number_of_components(G):
     # Assertions
     assert isinstance(G, nx.Graph), "G is not a NetworkX graph"
     
-    return len(nx.connected_components(G))
+    return len(list(nx.connected_components(G)))
 
 
 
