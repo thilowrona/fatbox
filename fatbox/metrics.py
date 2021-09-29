@@ -1001,7 +1001,7 @@ def compute_fault_values(G, attribute, mode):
 # A couple of functions to calculate network properties
 #******************************************************************************
 
-def total_length(G):
+def total_length(G, calculate=False):
     """ Calculate network length
     
     Parameters
@@ -1019,7 +1019,8 @@ def total_length(G):
     assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
 
     # Calculation
-    G = compute_edge_length(G)
+    if calculate:
+        G = compute_edge_length(G, mode='pos')
     
     length = 0
     for edge in G.edges:
