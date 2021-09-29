@@ -820,13 +820,10 @@ def component_lengths(G):
 
     # Calculation
     values = np.zeros((number_of_components(G)))
-    for m, cc in enumerate(sorted(nx.connected_components(G))):
-        G_sub = G.copy()
-        G_sub = G_sub.subgraph(cc)
-        length = 0
-        for edge in G_sub.edges:
-            length = length + G_sub.edges[edge]['length']
-        values[m] = length
+    
+    for m, G_sub in enumerate(nx.connected_component_subgraphs(G)):
+        values[m] = total_length(G_sub)
+        
     return values
 
 
