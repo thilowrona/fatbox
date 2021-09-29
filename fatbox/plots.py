@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors, cm
 from matplotlib.collections import PatchCollection
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import ListedColormap
 from matplotlib.patches import Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import seaborn as sns
@@ -666,11 +667,11 @@ def plot_rose(G, ax=[]):
     # Plotting
     strikes = np.zeros(len(G.edges))
     lengths = np.zeros(len(G.edges))
-
+    
     for n, edge in enumerate(G.edges):
         strikes[n] = G.edges[edge]['strike']
         lengths[n] = G.edges[edge]['length']
-
+    
     # ROSE PLOT
     bin_edges = np.arange(-5, 366, 10)
     number_of_strikes, bin_edges = np.histogram(
@@ -678,27 +679,36 @@ def plot_rose(G, ax=[]):
     number_of_strikes[0] += number_of_strikes[-1]
     half = np.sum(np.split(number_of_strikes[:-1], 2), 0)
     two_halves = np.concatenate([half, half])
-
-    cmap = plt.cm.twilight_shifted(np.concatenate(
-        (np.linspace(0, 1, 18), np.linspace(0, 1, 18)), axis=0))
-
+    
+    
+    
+    top = cm.get_cmap('Oranges_r', 128) # r means reversed version
+    bottom = cm.get_cmap('Blues', 128)# combine it all
+    newcolors = np.vstack((top(np.linspace(0, 1, 128)),
+                            bottom(np.linspace(0, 1, 128))))# create a new colormaps with a name of OrangeBlue
+    orange_blue = ListedColormap(newcolors, name='OrangeBlue')
+    
+    
+    
+    cmap = orange_blue(np.concatenate((np.linspace(0, 1, 18), np.linspace(0, 1, 18)), axis=0))
+    
+    
+    
     if ax == []:
         fig = plt.figure(figsize=(8, 8))
-
+    
         ax = fig.add_subplot(111, projection='polar')
-
+    
     ax.set_theta_zero_location('N')
     ax.set_theta_direction(-1)
     ax.set_thetagrids(np.arange(0, 360, 10), labels=np.arange(0, 360, 10))
-
+    
     ax.bar(np.deg2rad(np.arange(0, 360, 10)), two_halves,
            width=np.deg2rad(10), bottom=0.0, color=cmap, edgecolor='k')
-
-#    ax.set_rgrids(np.arange(1, two_halves.max() + 1, 2), angle=0, weight=
-#    'black')
+    
+    #    ax.set_rgrids(np.arange(1, two_halves.max() + 1, 2), angle=0, weight=
+    #    'black')
     ax.set_title('Rose Diagram', y=1.10, fontsize=15)
-
-    # fig.tight_layout()
 
 
 
