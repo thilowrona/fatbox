@@ -377,6 +377,10 @@ def calculate_strike(G, non):
           
         
         G.nodes[node]['strike'] = strike(x1, y1, x2, y2)
+    
+    
+    for edge in G.edges:
+        G.edges[edge]['strike'] = (G.nodes[edge[0]]['strike'] + G.nodes[edge[0]]['strike'])/2
 
     return G
 
