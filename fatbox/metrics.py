@@ -253,7 +253,7 @@ def count_edges(G):
 
 
 
-def compute_edge_length(G):
+def compute_edge_length(G, mode='pos'):
     """ Count the length of each edge
     
     Parameters
@@ -272,7 +272,7 @@ def compute_edge_length(G):
         
     # Calculation   
     for edge in G.edges:
-        G.edges[edge]['length'] = distance_between_nodes(G, edge[0], edge[1])
+        G.edges[edge]['length'] = distance_between_nodes(G, edge[0], edge[1], mode)
         
     return G
 
