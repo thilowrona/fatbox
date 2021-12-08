@@ -1196,7 +1196,10 @@ def unique_components(G_0, G_1):
 
 
 
-
+def comp_to_fault(G):
+  for node in G:
+    G.nodes[node]['fault'] = G.nodes[node]['component']
+  return G
 
 
 #******************************************************************************
