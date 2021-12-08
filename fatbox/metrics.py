@@ -703,7 +703,6 @@ def calculate_strikes_in_neighborhood(G, neighbors=3):
 
 
 
-
 from sklearn import linear_model
 from sklearn.metrics import r2_score
 
@@ -737,24 +736,27 @@ def compute_linearity(G, non, plot=False):
     #print(maximum)
     #print(path)
 
-    x = np.zeros(len(path))
-    y = np.zeros(len(path))
+    if len(path) <= 2:
+      G.nodes[node]['r2'] = 1
+    else:
+      x = np.zeros(len(path))
+      y = np.zeros(len(path))
 
-    for n, pode in enumerate(path):
-      x[n] = G.nodes[pode]['pos'][0]
-      y[n] = G.nodes[pode]['pos'][1]
+      for n, pode in enumerate(path):
+        x[n] = G.nodes[pode]['pos'][0]
+        y[n] = G.nodes[pode]['pos'][1]
 
-    #print(x)
-    #print(y)
+      #print(x)
+      #print(y)
 
-    x = x.reshape((-1, 1))
-    y = y.reshape((-1, 1))
+      x = x.reshape((-1, 1))
+      y = y.reshape((-1, 1))
 
-    model = linear_model.LinearRegression()
+      model = linear_model.LinearRegression()
 
-    model.fit(x, y)
+      model.fit(x, y)
 
-    G.nodes[node]['r2'] = r2_score(y, model.predict(x))
+      G.nodes[node]['r2'] = r2_score(y, model.predict(x))
 
     if plot:
       plt.figure()
