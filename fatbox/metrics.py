@@ -166,11 +166,9 @@ def calculate_polarity(G):
     return G
 
 
-
-
 def compute_curvature(G, non, sigma):
 
-  for node in G:
+  for node in tqdm(G, desc='Compute curvature'):
       
     neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
 
@@ -206,22 +204,33 @@ def compute_curvature(G, non, sigma):
       y[n] = G.nodes[pode]['pos'][1]
 
 
-    ysmoothed = gaussian_filter1d(y, sigma=sigma)
 
-    dx = np.gradient(x, x)  # first derivatives
-    dy = np.gradient(y, x)
+    if sigma > 0:
+      y = gaussian_filter1d(y, sigma=sigma)
 
-    d2x = np.gradient(dx, x)  # second derivatives
-    d2y = np.gradient(dy, x)
 
-    cur = np.abs(d2y) / (np.sqrt(1 + dy ** 2)) ** 1.5  # curvature
+    if len(path) > 1:
 
-    G.nodes[node]['min_curv'] = np.nanmin(cur)
-    G.nodes[node]['mean_curv'] = np.nanmean(cur)
-    G.nodes[node]['max_curv'] = np.nanmax(cur)
+      dx = np.gradient(x, x)  # first derivatives
+      dy = np.gradient(y, x)
+
+      d2x = np.gradient(dx, x)  # second derivatives
+      d2y = np.gradient(dy, x)
+
+      cur = np.abs(d2y) / (np.sqrt(1 + dy ** 2)) ** 1.5  # curvature
+
+      G.nodes[node]['min_curv'] = np.nanmin(cur)
+      G.nodes[node]['mean_curv'] = np.nanmean(cur)
+      G.nodes[node]['max_curv'] = np.nanmax(cur)
+    
+
+    else:
+      G.nodes[node]['min_curv']  = float('nan')
+      G.nodes[node]['mean_curv'] = float('nan')
+      G.nodes[node]['max_curv']  = float('nan')
+    
 
   return G
-
 
 #******************************************************************************
 # (2) EDGE METRICS
