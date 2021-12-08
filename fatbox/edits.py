@@ -399,7 +399,7 @@ def split_triple_junctions(G, dos, split='minimum', threshold = 20, plot=False):
                 dy = y[0]-y[-1]
                 
                 # If point cloud is vertical
-                if abs(dy/dx) > 8:
+                if dx < 1e-10 or abs(dy/dx) > 8:
                     slope = 1e16
                     x_pred = np.ones_like(x)*np.mean(x)
                     y_pred = y                   
