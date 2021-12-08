@@ -695,7 +695,66 @@ def calculate_strikes_in_neighborhood(G, neighbors=3):
 
 
 
+from sklearn import linear_model
+from sklearn.metrics import r2_score
 
+
+def compute_linearity(G, non, plot=False):
+
+  for node in tqdm(G, desc='Compute linearity'):
+      
+    neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
+
+    # Compute distances
+    dm = np.zeros((len(neighbors), len(neighbors)))
+    for n, neighbor in enumerate(neighbors):
+      for m, another in enumerate(neighbors):
+        dm[n,m] = nx.shortest_path_length(G, neighbor, another)
+
+    maximum_distance = np.max(dm)
+
+    # Find start and end node
+    for n, neighbor in enumerate(neighbors):
+      for m, another in enumerate(neighbors):
+        if dm[n,m] == maximum_distance:
+          start = neighbor
+          end = another
+          break
+
+    # Compute path
+    path = nx.shortest_path(G, start, end) 
+
+    #print(dm)
+    #print(maximum)
+    #print(path)
+
+    x = np.zeros(len(path))
+    y = np.zeros(len(path))
+
+    for n, pode in enumerate(path):
+      x[n] = G.nodes[pode]['pos'][0]
+      y[n] = G.nodes[pode]['pos'][1]
+
+    #print(x)
+    #print(y)
+
+    x = x.reshape((-1, 1))
+    y = y.reshape((-1, 1))
+
+    model = linear_model.LinearRegression()
+
+    model.fit(x, y)
+
+    G.nodes[node]['r2'] = r2_score(y, model.predict(x))
+
+    if plot:
+      plt.figure()
+      plt.scatter(x, y)
+      plt.plot(x, m * x + c, 'r')
+      plt.axis('equal')
+      plt.show()
+
+  return G
 
 
 
