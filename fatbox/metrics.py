@@ -1043,19 +1043,19 @@ def compute_fault_values(G, attribute, mode):
             
         # Compute fault values
         if mode == 'min':
-            values[n] = np.min(node_values)
+            values[n] = np.nanmin(node_values)
         
         elif mode == 'max':
-            values[n] = np.max(node_values)
+            values[n] = np.nanmax(node_values)
         
         elif mode == 'mean':
-            values[n] = np.mean(node_values)
+            values[n] = np.nanmean(node_values)
         
         elif mode == 'range':
-            values[n] = np.max(node_values)-np.min(node_values)
+            values[n] = np.nanmax(node_values)-np.nanmin(node_values)
     
         elif mode == 'sum':
-            values[n] = np.sum(node_values)         
+            values[n] = np.nansum(node_values)         
             
     return values
 
