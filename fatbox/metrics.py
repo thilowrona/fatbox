@@ -982,7 +982,7 @@ def get_fault(G, n):
 
 
 
-def fault_lengths(G):
+def calculate_fault_lengths(G, mode='get'):
     """ Calculate fault lengths
     
     Parameters
@@ -999,15 +999,26 @@ def fault_lengths(G):
     # Assertions
     assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
 
+    # Preparation
+    G = compute_edge_length(G)
+
     # Calculation
     labels = get_fault_labels(G)
     lengths = np.zeros(len(labels))
 
-    for n, label in enumerate(labels):
-        fault = get_fault(G, label)
-        lengths[n] = total_length(fault)
-        
-    return lengths
+    if mode=='get':
+      for n, label in enumerate(labels):
+          fault = get_fault(G, label)
+          lengths[n] = total_length(fault)
+      return lengths
+
+    if mode=='write':
+      for n, label in enumerate(labels):
+          fault = get_fault(G, label)
+          lengths[n] = total_length(fault)
+          for node in fault:
+            G.nodes[node]['fault_length'] = lengths[n]
+      return G
 
 
 
