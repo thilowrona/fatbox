@@ -362,7 +362,7 @@ def calculate_strike(G, non):
     # Assertions
     assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
     
-    for node in G:
+    for node in tqdm(G, desc='Calculate strike'):
     
         
         neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
@@ -454,7 +454,7 @@ def calculate_dip(G, non):
     # Assertions
     assert isinstance(G, nx.Graph), 'G is not a NetworkX graph'    
     
-    for node in G:
+    for node in tqdm(G):
     
         
         neighbors = nx.single_source_shortest_path_length(G, node, cutoff=non)
