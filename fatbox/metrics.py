@@ -1573,7 +1573,9 @@ def calculate_slip(G, H, dt, dim):
     return G
 
 
-def calculate_throw_from_DEM(G, DEM, factor=1):
+def calculate_throw_from_DEM(G, DEM, non=3, factor=1):
+
+  G = calculate_direction(G, non)
 
   for node in tqdm(G, desc='Calculate throw'):
 
