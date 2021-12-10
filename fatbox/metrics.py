@@ -1573,5 +1573,72 @@ def calculate_slip(G, H, dt, dim):
     return G
 
 
+def calculate_throw_from_DEM(G, DEM, factor=1):
 
+  for node in tqdm(G, desc='Calculate throw'):
+
+    (x, y) = G.nodes[node]['pos']
+
+    dx = G.nodes[node]['dx']
+    dy = G.nodes[node]['dy']
+
+    if math.isnan(dx) or math.isnan(dy):
+      
+      G.nodes[node]['throw'] = float('nan')
+    
+    else:
+
+      dx = factor * dx
+      dy = factor * dy
+
+      x_p = int(x - dy)
+      y_p = int(y + dx)
+
+      x_n = int(x + dy)
+      y_n = int(y - dx)
+
+      if x_p < 0:
+        x_p = 0
+
+      if x_p >= DEM.shape[1]:
+        x_p = DEM.shape[1]-1
+      
+      if y_p < 0:
+        y_p = 0
+
+      if y_p >= DEM.shape[0]:
+        y_p = DEM.shape[0]-1
+
+      if x_n < 0:
+        x_n = 0
+
+      if x_n >= DEM.shape[1]:
+        x_n = DEM.shape[1]-1
+      
+      if y_n < 0:
+        y_n = 0
+
+      if y_n >= DEM.shape[0]:
+        y_n = DEM.shape[0]-1
+
+
+      n = 100
+
+      xl, yl = np.linspace(x_p, x_n, n), np.linspace(y_p, y_p, n)
+
+      # Extract the values along the line
+      values = np.zeros(n)
+
+      for n, (x, y) in enumerate(zip(xl,yl)):
+          values[n] = DEM[int(y),int(x)]
+
+      # Compute minimum/maximum
+      minimum = np.percentile(values, 20)
+      maximum = np.percentile(values, 80)
+
+      # Write throw to graph
+      G.nodes[node]['throw'] = maximum - minimum
+
+
+  return G
 
