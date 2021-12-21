@@ -4,6 +4,7 @@ import random
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 # Fatbox
 from fatbox import metrics
@@ -77,7 +78,7 @@ def remove_triangles(G):
 
     # Find triangles through edges
     triangles = []
-    for node in G:
+    for node in tqdm(G, desc='Find triangles'):
         for n in G.neighbors(node):
             for nn in G.neighbors(n):
                 for nnn in G.neighbors(nn):
@@ -89,7 +90,7 @@ def remove_triangles(G):
     # Remove triangles
     H = G.copy()
 
-    for t in triangles:
+    for t in tqdm(triangles, desc='Remove trianlges'):
         # Find longest edge
         length = 0
         for edge in [(t[0], t[1]), (t[0], t[2]), (t[1], t[2])]:
