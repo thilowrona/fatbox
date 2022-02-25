@@ -42,7 +42,12 @@ You can also clone the companion git repository containing the tutorials:
 ``` 
 git clone https://github.com/thilowrona/fatbox_tutorials
 ```
+### License
+Copyright [2022] Helmholtz Centre Potsdam GFZ German Research Centre for Geosciences
 
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 ## Citation
 If you use this project in your research or wish to refer to the results of the tutorials, please use the following BibTeX entry.
@@ -50,7 +55,7 @@ If you use this project in your research or wish to refer to the results of the 
 @misc{fatbox2021,
   author =       {Thilo Wrona, Sascha Brune},
   title =        {{Fault analysis toolbox}},
-  howpublished = {\url{https://github.com/thilowrona/fatbox}},
-  year =         {2021}
+  howpublished = {\url{https://doi.org/10.5880/GFZ.2.5.2022.002}},
+  year =         {2022}
 }
 ```
