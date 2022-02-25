@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 If you use this project in your research or wish to refer to the results of the tutorials, please use the following BibTeX entry.
 ```
 @misc{fatbox2021,
-  author =       {Thilo Wrona, Sascha Brune},
+  author =       {Thilo Wrona, Sascha Brune, Pauline Gayrin, Tim Hake},
   title =        {{Fault analysis toolbox}},
   howpublished = {\url{https://doi.org/10.5880/GFZ.2.5.2022.002}},
   year =         {2022}
