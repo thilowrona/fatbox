@@ -221,7 +221,7 @@ tqdm==4.41.1
 traitlets==4.3.3
 unicodecsv==0.14.1
 urllib3==1.25.7
-vtk==8.2.0
+vtk==9.0.1
 wcwidth==0.1.7
 webencodings==0.5.1
 Werkzeug==0.16.0
